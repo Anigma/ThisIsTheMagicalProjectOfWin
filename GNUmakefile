@@ -4,7 +4,7 @@
 CC	:= gcc 
 CFLAGS := -g -Wall -Werror $(LABDEFS)
 
-TARGETS := doTest doTest2 showHandler libULT.a alarmHelper parseUcontext
+TARGETS := doTest doTest2 showHandler libULT.a alarmHelper parseUcontext threadList
 
 # Make sure that 'all' is the first target
 all: $(TARGETS)
@@ -65,6 +65,9 @@ ULT_LIB :=  -L . -l ULT
 # about structuring Makefiles for larger projects.
 #
 # Explicit dependencies instead, to keep things simple:
+threadList: threadList.h threadList.c
+	gcc $(CFLAGS) -o $@ threadList.c
+
 parseUcontext: parseUcontext.c 
 	gcc $(CFLAGS) -o $@ $<
 
@@ -95,4 +98,6 @@ showHandler: showHandler.o libULT.a
 
 alarmHelper: alarmHelper.c
 	gcc $(CFLAGS) -o $@ $<
+
+
 

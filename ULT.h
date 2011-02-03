@@ -5,23 +5,13 @@
 typedef int Tid;
 #define ULT_MAX_THREADS 1024
 #define ULT_MIN_STACK 32768
+volatile Tid nextTid;
 
 
-
-typedef struct ThrdCtlBlkStruct {
-  struct ucontext *context;
-} ThrdCtlBlk;
-
-typedef struct ThreadQueueNodeStruct {
-  ThrdCtlBlk *tcb;
-  struct ThreadQueueNode *next;
-} ThreadQueueNode;
-
-typedef struct ThreadQueueStruct {
-  ThreadQueueNode *head;
-  int count;
-  
-} ThreadQueue;
+typedef struct TCBStruct {
+  struct ucontext* context;
+  Tid threadID;
+} TCB;
 
 
 
@@ -44,9 +34,10 @@ static inline int ULT_isOKRet(Tid ret){
   return (ret >= 0 ? 1 : 0);
 }
 
+void ULT_Initialize();
 Tid ULT_CreateThread(void (*fn)(void *), void *parg);
 Tid ULT_Yield(Tid tid);
-Tid ULT_Switch(ThrdCtlBlk *target);
+Tid ULT_Switch(TCB* target);
 Tid ULT_DestroyThread(Tid tid);
 
 
