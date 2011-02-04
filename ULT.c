@@ -1,13 +1,20 @@
-#include <assert.h>
-
-/* We want the extra information from these definitions */
-#ifndef __USE_GNU
-#define __USE_GNU
-#endif /* __USE_GNU */
-#include <ucontext.h>
-#include <stdlib.h>
-
 #include "ULT.h"
+
+void error(char* string)
+{
+  printf("%s", string);
+  exit(-1);
+}
+
+void* mallocSafely(size_t size)
+{
+  if(size==0) error("I refuse to allocate nothing");
+  void* temp = malloc(size);
+  if(temp==NULL) error("Could not allocate memory!");
+  return temp;
+}
+
+
 
 TCB* threads;
 int numberOfThreads;

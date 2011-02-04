@@ -5,7 +5,6 @@
 #include <time.h>
 #include <unistd.h>
 
-
 long nsToSleep = 10000000;
 
 int main(int argc, char ** argv)

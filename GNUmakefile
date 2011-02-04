@@ -65,14 +65,15 @@ ULT_LIB :=  -L . -l ULT
 # about structuring Makefiles for larger projects.
 #
 # Explicit dependencies instead, to keep things simple:
-threadList: threadList.h threadList.c
-	gcc $(CFLAGS) -o $@ threadList.c
 
 parseUcontext: parseUcontext.c 
 	gcc $(CFLAGS) -o $@ $<
 
 ULT.o: ULT.c ULT.h  $(MOREH)
 	gcc -c $(CFLAGS) -o $@ ULT.c
+
+threadList: threadList.h threadList.c 
+	gcc $(CFLAGS) -o $@ threadList.c ULT.o
 
 interrupt.o: interrupt.c interrupt.h
 	gcc -c $(CFLAGS) -o $@ interrupt.c

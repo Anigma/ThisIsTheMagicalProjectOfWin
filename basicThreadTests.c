@@ -7,10 +7,8 @@
 #include "basicThreadTests.h"
 #include "interrupt.h"
 #include "ULT.h"
-/*
- *  Using posix mutex for some tests of phases 1 and 2
- */
-#include <pthread.h> 
+#include <pthread.h> // Using posix mutex for some tests of phases 1 and 2
+
 
 static const int verbose = 0;
 static const int vverbose = 0;
@@ -38,10 +36,10 @@ void basicThreadTests()
    * Initial thread yields
    */
   ret = ULT_Yield(ULT_SELF);
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   printf("Initial thread returns from Yield(SELF)\n");
   ret = ULT_Yield(0); /* See ULT.h -- initial thread must be Tid 0 */
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   printf("Initial thread returns from Yield(0)\n");
   ret = ULT_Yield(ULT_ANY);
   assert(ret == ULT_NONE);
@@ -57,7 +55,7 @@ void basicThreadTests()
    * Create a thread
    */
   ret = ULT_CreateThread((void (*)(void *))hello, "World");
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   ret2 = ULT_Yield(ret);
   assert(ret2 == ret);
 
@@ -72,7 +70,7 @@ void basicThreadTests()
     ret = snprintf(msg[ii], 1023, "Hello from thread %d\n", ii);
     assert(ret > 0);
     children[ii] = ULT_CreateThread((void (*)(void *))hello, msg[ii]);
-    assert(ULT_isOKRet(children[ii]));
+    assert(tidValid(children[ii]));
   }
   for(ii = 0; ii < NTHREAD; ii++){
     ret = ULT_Yield(children[ii]);
@@ -96,7 +94,7 @@ void basicThreadTests()
   printf("Creating %d threads\n", ULT_MAX_THREADS-1);
   for(ii = 0; ii < ULT_MAX_THREADS-1; ii++){
     ret = ULT_CreateThread((void (*)(void *))fact, (void *)10);
-    assert(ULT_isOKRet(ret));
+    assert(tidValid(ret));
   }
   /*
    * Now we're out of threads. Next create should fail.
@@ -115,7 +113,7 @@ void basicThreadTests()
        * Later ones may or may not depending on who
        * stub schedules  on exit.
        */
-      assert(ULT_isOKRet(ret));
+      assert(tidValid(ret));
     }
   }
   /*
@@ -125,7 +123,7 @@ void basicThreadTests()
   printf("Creating %d threads\n", ULT_MAX_THREADS-1);
   for(ii = 0; ii < ULT_MAX_THREADS-1; ii++){
     ret = ULT_CreateThread((void (*)(void *))fact, (void *)10);
-    assert(ULT_isOKRet(ret));
+    assert(tidValid(ret));
   }
   /*
    * Now destroy some explicitly and let the others run
@@ -134,7 +132,7 @@ void basicThreadTests()
          ULT_MAX_THREADS/2);
   for(ii = 0; ii < ULT_MAX_THREADS; ii+=2){
     ret = ULT_DestroyThread(ULT_ANY);
-    assert(ULT_isOKRet(ret));
+    assert(tidValid(ret));
   }
   for(ii = 0; ii < ULT_MAX_THREADS; ii++){
     ret = ULT_Yield(ii);
@@ -157,9 +155,9 @@ void basicThreadTests()
   printf("Testing destroy self\n");
   int flag = setFlag(0);
   ret = ULT_CreateThread((void (*)(void *))suicide, NULL);
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   ret = ULT_Yield(ret);
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   flag = setFlag(0);
   assert(flag == 1); /* Other thread ran */
   /* That thread is gone now */
@@ -175,7 +173,7 @@ grandFinale()
   printf("For my grand finale, I will destroy myself\n");
   printf("while my talented assistant prints Done.\n");
   ret = ULT_CreateThread((void (*)(void *))finale, NULL);
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   ULT_DestroyThread(ULT_SELF);
   assert(0);
 
@@ -190,11 +188,11 @@ hello(char *msg)
   printf("Made it to hello() in called thread\n");
   printf("Message: %s\n", msg);
   ret = ULT_Yield(ULT_SELF);
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   printf("Thread returns from first yield\n");
 
   ret = ULT_Yield(ULT_SELF);
-  assert(ULT_isOKRet(ret));
+  assert(tidValid(ret));
   printf("Thread returns from second yield\n");
 
   while(1){
@@ -284,7 +282,7 @@ void preemptiveTests()
 
   for(ii = 0; ii < NPOTATO; ii++){
     potatoTids[ii] = ULT_CreateThread((void (*)(void *))doPotato, (void *)ii);
-    assert(ULT_isOKRet(potatoTids[ii]));
+    assert(tidValid(potatoTids[ii]));
   }
 
 
@@ -294,7 +292,7 @@ void preemptiveTests()
 
   for(ii = 0; ii < NPOTATO; ii++){
     ret = ULT_DestroyThread(ULT_ANY);
-    assert(ULT_isOKRet(ret));
+    assert(tidValid(ret));
   }  
 
   printf("Done.\n");
@@ -353,7 +351,7 @@ doPotato(int mySlot)
       int ii;
       for(ii = 0; ii < mySlot - 4; ii++){
         ret = ULT_Yield(ULT_ANY);
-        assert(ULT_isOKRet(ret));
+        assert(tidValid(ret));
       }
     }
   }

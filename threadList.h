@@ -1,23 +1,24 @@
+#ifndef _threadList_h_
+#define _threadList_h_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "ULT.h"
 
-void error(char* string);
-void* mallocSafely(size_t size);
-
 typedef struct threadListNodeStruct
 {
 	struct threadListNodeStruct*	next;
-	TCB*				thread;
-	
+	TCB*				thread;	
 } threadListNode;
 
 typedef struct threadListStruct
 {
-	threadListNode *head;
+	threadListNode* head;
 } threadList;
   
-threadList* threadListInit(TCB* thread);
+threadList* threadListInit();
 void threadListAdd(TCB* thread, threadList* list);
-void threadListRemove(TCB* thread, threadList* list);
+void threadListRemove(Tid id, threadList* list);
 TCB* threadListFind(Tid id, threadList* list);
+
+#endif

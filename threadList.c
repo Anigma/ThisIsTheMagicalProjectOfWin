@@ -1,85 +1,76 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "ULT.h"
 #include "threadList.h"
 
-void error(char* string)
+threadList* threadListInit()
 {
-  printf("%s", string);
-  exit(-1);
+	threadList* list = (threadList*) mallocSafely(sizeof(threadList));
+	list->head = NULL;
+	return list;
 }
-
-void* mallocSafely(size_t size)
-{
-  if(size==0) error("I refuse to allocate nothing");
-  void* temp = malloc(size);
-  if(temp==NULL) error("Could not allocate memory!");
-  return temp;
-}
-
-
-threadList* threadListInit(TCB* thread)
-{
-  if(thread==NULL) error("Trying to add null thread!");
-	
-  threadList* list = (threadList*) mallocSafely(sizeof(threadList));
-	
-  list->head = NULL;
-	
-  return list;
-}
-
 
 void threadListAdd(TCB* thread, threadList* list)
 {
-  threadListNode *head = list->head;
+	//Create the new node
+	threadListNode* newNode = (threadListNode*) mallocSafely(sizeof(threadListNode));
+	newNode->thread = thread;
 
-  if (head == NULL) {
-    list->head = (threadListNode *) mallocSafely(sizeof(threadListNode));
-    list->head->thread = thread;
-    list->head->next = NULL;
-  }
-
-  head = (threadListNode *) mallocSafely(sizeof(threadListNode));
-  head->next = list->head;
-
-  list->head = head;
+	//Add node to the head
+	newNode->next = list->head;
+	list->head = newNode;
 }
-
-
-void threadListRemove(TCB* thread, threadList* list)
-{
-  /*threadList *curr;
-
-  if (curr->next == NULL) {
-    if (list->thread == thread)
-      free(thread);
-  }
-
-  while (curr->next->next != NULL)
-
-    while(list->thread != thread)
-      {
-	if(list->next) list = list->next;
-	else error("Could not find thread in list!");
-      }
-	
-  */
-}
-
 
 TCB* threadListFind(Tid id, threadList* list)
 {
-  return NULL;
+	threadListNode* node = list->head;
+	while(node)
+	{
+		if(node->thread->id == id) return node->thread;
+		node = node->next;
+	}
+	return NULL;
+}
+
+void threadListRemove(Tid id, threadList* list)
+{
+	threadListNode* node = list->head;
+	threadListNode* prev = NULL;
+	while(node)
+	{
+		if(node->thread == NULL) error("Node is degenerate!");
+		if(node->thread->id == id)
+		{	
+			//This one must fix the head
+			if(prev == NULL)
+			{
+				list->head = node->next;
+			}
+
+			//Past the head
+			else
+			{
+				prev->next = node->next;
+			}
+
+			free(node->thread->context);
+			free(node->thread);
+			free(node);
+		}
+		//Try the next one
+		prev = node;
+		node = node->next;
+		
+	}
+	error("Tried to remove a thread from a list that does not contain that thread!");
 }
 
 
 int main()
 {
-  printf("Testing threadList!\n");
-  TCB* myTCB = (TCB *) mallocSafely(sizeof(TCB));
-  threadList* list = threadListInit(myTCB);
-  free(list);
-
-  return 0;
+	printf("Testing threadList!\n");
+	TCB* myTCB = (TCB*) mallocSafely(sizeof(TCB));
+	myTCB->id = 7;
+	threadList* list = threadListInit();
+	threadListAdd(myTCB, list);
+	threadListRemove(7, list);
+	free(list);
+	return 0;
 }
