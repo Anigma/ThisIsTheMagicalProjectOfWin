@@ -19,6 +19,7 @@ uint getEIPFromContext(ucontext_t *uc)
 	return (uint) (uc->uc_mcontext).gregs[REG_EIP];
 }
 
+// Craig: I think we want to use this one....
 uint getESPFromContext(ucontext_t *uc)
 {
 	return (uint) (uc->uc_mcontext).gregs[REG_ESP];

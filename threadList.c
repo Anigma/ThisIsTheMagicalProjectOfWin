@@ -7,7 +7,13 @@ threadList* threadListInit()
 	return list;
 }
 
-void threadListAdd(TCB* thread, threadList* list)
+void threadListFree(threadList* list)
+{
+	assert(list->head == NULL);
+	free(list);
+}
+
+void threadListAdd(Thread* thread, threadList* list)
 {
 	//Create the new node
 	threadListNode* newNode = (threadListNode*) mallocSafely(sizeof(threadListNode));
@@ -18,7 +24,7 @@ void threadListAdd(TCB* thread, threadList* list)
 	list->head = newNode;
 }
 
-TCB* threadListFind(Tid id, threadList* list)
+Thread* threadListFind(Tid id, threadList* list)
 {
 	threadListNode* node = list->head;
 	while(node)
@@ -50,8 +56,7 @@ void threadListRemove(Tid id, threadList* list)
 				prev->next = node->next;
 			}
 
-			free(node->thread->context);
-			free(node->thread);
+			ThreadFree(node->thread);
 			free(node);
 		}
 		//Try the next one
@@ -65,12 +70,17 @@ void threadListRemove(Tid id, threadList* list)
 
 int main()
 {
-	printf("Testing threadList!\n");
-	TCB* myTCB = (TCB*) mallocSafely(sizeof(TCB));
-	myTCB->id = 7;
+	printf("Testing threadList\n");
+	Thread* myThread = ThreadInit(getContext());
+	printf("Made a thread\n");
+	Tid myTid = myThread->id;
 	threadList* list = threadListInit();
-	threadListAdd(myTCB, list);
-	threadListRemove(7, list);
-	free(list);
+	printf("Constructed our list\n");
+	threadListAdd(myThread, list);
+	printf("Populated our list\n");
+	threadListRemove(myTid, list);
+	printf("Deleted from list\n");
+	threadListFree(list);
+	printf("Freed our list\n");
 	return 0;
 }

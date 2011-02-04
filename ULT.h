@@ -13,10 +13,11 @@
 // Some utility functions
 void error(char* string);
 void* mallocSafely(size_t size);
+ucontext_t* getContext();
 
 // Some constraints on behavior
-#define ULT_MAX_THREADS 1024
-#define ULT_MIN_STACK 32768
+static const int ULT_MAX_THREADS = 1024;
+static const int ULT_MIN_STACK = 32768;
 
 // Thread identifiers 
 typedef int Tid;
@@ -38,18 +39,23 @@ static inline int tidValid(Tid tid)
   return (tid >= 0);
 }
 
+
 // Represents a thread control block
-typedef struct TCBStruct
+typedef struct ThreadStruct
 {
-	struct ucontext* context;
+	ucontext_t* context;
 	Tid id;
-} TCB;
+} Thread;
+
+Thread* ThreadInit(ucontext_t* context);
+void ThreadFree(Thread* thread);
+
 
 // We must implement these
 void ULT_Initialize();
 Tid ULT_CreateThread(void (*fn)(void*), void* parg);
 Tid ULT_Yield(Tid tid);
-Tid ULT_Switch(TCB* target);
+Tid ULT_Switch(Thread* target);
 Tid ULT_DestroyThread(Tid tid);
 
 #endif

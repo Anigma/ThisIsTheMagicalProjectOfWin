@@ -2,21 +2,43 @@
 
 void error(char* string)
 {
-  printf("%s", string);
-  exit(-1);
+	printf("%s", string);
+	exit(-1);
 }
 
 void* mallocSafely(size_t size)
 {
-  if(size==0) error("I refuse to allocate nothing");
-  void* temp = malloc(size);
-  if(temp==NULL) error("Could not allocate memory!");
-  return temp;
+	if(size==0) error("I refuse to allocate nothing");
+	void* temp = malloc(size);
+	if(temp==NULL) error("Could not allocate memory!");
+	return temp;
+}
+
+ucontext_t* getContext()
+{
+	ucontext_t* temp = (ucontext_t*) mallocSafely(sizeof(ucontext_t));
+	int err = getcontext(temp);
+	if(err) error("Could not get context!");
+	return temp;
+}
+
+
+void ThreadFree(Thread* myThread)
+{
+	free(myThread->context);
+	free(myThread);
+}
+
+Thread* ThreadInit(ucontext_t* context)
+{
+	Thread* temp =  (Thread*) mallocSafely(sizeof(Thread));
+	temp->context	= context;
+	temp->id	= nextTid++;
+	return temp;
 }
 
 
 
-TCB* threads;
 int numberOfThreads;
 
 volatile int initialized = 0;
@@ -25,11 +47,8 @@ void ULT_Initialize()
 	if(initialized) return;
 
 	//Create thread list
-	threads = (TCB*) malloc(sizeof(TCB)*ULT_MAX_THREADS);
 
 	//Put current thread in thread list
-	//threads[0] = 
-
 }
 
 
@@ -55,7 +74,7 @@ Tid ULT_Yield(Tid wantTid)
 }
 
 volatile int doneThat;
-Tid ULT_Switch(TCB *target)
+Tid ULT_Switch(Thread *target)
 {
 /*
        doneThat = 0;

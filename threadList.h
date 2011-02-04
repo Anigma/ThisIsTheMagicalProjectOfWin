@@ -8,7 +8,7 @@
 typedef struct threadListNodeStruct
 {
 	struct threadListNodeStruct*	next;
-	TCB*				thread;	
+	Thread*				thread;	
 } threadListNode;
 
 typedef struct threadListStruct
@@ -17,8 +17,8 @@ typedef struct threadListStruct
 } threadList;
   
 threadList* threadListInit();
-void threadListAdd(TCB* thread, threadList* list);
+void threadListAdd(Thread* thread, threadList* list);
 void threadListRemove(Tid id, threadList* list);
-TCB* threadListFind(Tid id, threadList* list);
+Thread* threadListFind(Tid id, threadList* list);
 
 #endif
