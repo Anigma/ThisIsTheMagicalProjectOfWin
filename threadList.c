@@ -66,21 +66,3 @@ void threadListRemove(Tid id, threadList* list)
 	}
 	error("Tried to remove a thread from a list that does not contain that thread!");
 }
-
-
-int main()
-{
-	printf("Testing threadList\n");
-	Thread* myThread = ThreadInit(getContext());
-	printf("Made a thread\n");
-	Tid myTid = myThread->id;
-	threadList* list = threadListInit();
-	printf("Constructed our list\n");
-	threadListAdd(myThread, list);
-	printf("Populated our list\n");
-	threadListRemove(myTid, list);
-	printf("Deleted from list\n");
-	threadListFree(list);
-	printf("Freed our list\n");
-	return 0;
-}

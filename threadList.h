@@ -1,9 +1,11 @@
 #ifndef _threadList_h_
 #define _threadList_h_
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "ULT.h"
+#include "thread.h"
+#include "utility.h"
 
 typedef struct threadListNodeStruct
 {
