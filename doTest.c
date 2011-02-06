@@ -4,7 +4,8 @@
 #include "basicThreadTests.h"
 #include "ULT.h"
 #include "utility.h"
-#include "thread.h"
+#include "Thread.h"
+#include "ThreadList.h"
 
 
 void testThread()
@@ -18,6 +19,8 @@ void testThread()
 
 void testThreadList()
 {
+	ThreadList* list = ThreadListInit();
+	test("creating threadList", list != NULL);
 	
 }
 
@@ -28,8 +31,5 @@ int main(int argc, char **argv)
 	testThreadList();
 	basicThreadTests();
 	grandFinale();
-	error("Should not have returned from grandFinale()!");
 	return 0;
 }
-
-

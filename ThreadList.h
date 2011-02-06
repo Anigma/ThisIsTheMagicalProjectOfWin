@@ -1,26 +1,26 @@
-#ifndef _threadList_h_
-#define _threadList_h_
+#ifndef _ThreadList_h_
+#define _ThreadList_h_
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "thread.h"
+#include "Thread.h"
 #include "utility.h"
 
-typedef struct threadListNodeStruct
+typedef struct ThreadListNodeStruct
 {
-	struct threadListNodeStruct*	next;
+	struct ThreadListNodeStruct*	next;
 	Thread*				thread;	
-} threadListNode;
+} ThreadListNode;
 
-typedef struct threadListStruct
+typedef struct ThreadListStruct
 {
-	threadListNode* head;
-} threadList;
+	ThreadListNode* head;
+} ThreadList;
   
-threadList* threadListInit();
-void threadListAdd(Thread* thread, threadList* list);
-void threadListRemove(Tid id, threadList* list);
-Thread* threadListFind(Tid id, threadList* list);
+ThreadList* ThreadListInit();
+void ThreadListAdd(Thread* thread, ThreadList* list);
+void ThreadListRemove(Tid id, ThreadList* list);
+Thread* ThreadListFind(Tid id, ThreadList* list);
 
 #endif

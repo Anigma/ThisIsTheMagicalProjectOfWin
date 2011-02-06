@@ -2,7 +2,6 @@
 # rule: dependency
 # $@: $<
 
-
 CC	:= gcc 
 CFLAGS	:= -g -Wall -Werror
 TARGETS	:= doTest doTest2 showHandler libULT.a alarmHelper parseUcontext
@@ -10,14 +9,14 @@ TURNIN	:= /lusr/bin/turnin
 GRADER	:= muqeet
 LABNAME	:= handin-372-labULT
 MOREH	:= cfuncproto.h
-ULT_SRC	:= ULT.c interrupt.c thread.c threadList.c utility.c
+ULT_SRC	:= ULT.c interrupt.c Thread.c ThreadList.c utility.c
 ULT_OBJS := $(ULT_SRC:.c=.o)
 ULT_LIB	:=  -L . -l ULT 
 
 all: $(TARGETS)
 
 clean:
-	rm -rf core *.o *.out $(TARGETS) *~ *.bak *.orig
+	rm -rf core *.o *.out $(TARGETS) *~ *.bak *.orig *.gch
 
 handin: handin.tar
 	echo "Turning in handin.tar containing the following files:"

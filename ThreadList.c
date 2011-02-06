@@ -1,22 +1,22 @@
-#include "threadList.h"
+#include "ThreadList.h"
 
-threadList* threadListInit()
+ThreadList* ThreadListInit()
 {
-	threadList* list = (threadList*) mallocSafely(sizeof(threadList));
+	ThreadList* list = (ThreadList*) mallocSafely(sizeof(ThreadList));
 	list->head = NULL;
 	return list;
 }
 
-void threadListFree(threadList* list)
+void ThreadListFree(ThreadList* list)
 {
 	assert(list->head == NULL);
 	free(list);
 }
 
-void threadListAdd(Thread* thread, threadList* list)
+void ThreadListAdd(Thread* thread, ThreadList* list)
 {
 	//Create the new node
-	threadListNode* newNode = (threadListNode*) mallocSafely(sizeof(threadListNode));
+	ThreadListNode* newNode = (ThreadListNode*) mallocSafely(sizeof(ThreadListNode));
 	newNode->thread = thread;
 
 	//Add node to the head
@@ -24,9 +24,9 @@ void threadListAdd(Thread* thread, threadList* list)
 	list->head = newNode;
 }
 
-Thread* threadListFind(Tid id, threadList* list)
+Thread* ThreadListFind(Tid id, ThreadList* list)
 {
-	threadListNode* node = list->head;
+	ThreadListNode* node = list->head;
 	while(node)
 	{
 		if(node->thread->id == id) return node->thread;
@@ -35,10 +35,10 @@ Thread* threadListFind(Tid id, threadList* list)
 	return NULL;
 }
 
-void threadListRemove(Tid id, threadList* list)
+void ThreadListRemove(Tid id, ThreadList* list)
 {
-	threadListNode* node = list->head;
-	threadListNode* prev = NULL;
+	ThreadListNode* node = list->head;
+	ThreadListNode* prev = NULL;
 	while(node)
 	{
 		if(node->thread == NULL) error("Node is degenerate!");

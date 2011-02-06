@@ -1,19 +1,24 @@
 #include "ULT.h"
-#include "threadList.h"
+#include "ThreadList.h"
 
+// Thread package state
 int numberOfThreads;
-threadList* list;
+ThreadList* list;
+ThreadList* zombies;
 volatile int initialized = 0;
+
+
+
 void ULT_Initialize()
 {
 	if(initialized) return;
 
 	//Create thread list
-	threadListInit(list);
+	ThreadListInit(list);
 	
 	//Put current thread in thread list
 	Thread* firstThread = ThreadInit(getContext());
-	threadListAdd(firstThread, list);
+	ThreadListAdd(firstThread, list);
 }
 
 Tid ULT_CreateThread(void (*fn)(void *), void *parg)
@@ -62,6 +67,5 @@ Tid ULT_Switch(Thread *target)
 
 Tid ULT_DestroyThread(Tid tid)
 {
-	assert(0); /* TBD */
 	return ULT_FAILED;
 }

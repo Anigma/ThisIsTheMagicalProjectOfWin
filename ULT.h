@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ucontext.h>
-#include "thread.h"
-#include "threadList.h"
+#include "Thread.h"
+#include "ThreadList.h"
 #include "utility.h"
 #include "interrupt.h"
 
