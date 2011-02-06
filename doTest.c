@@ -3,20 +3,33 @@
 #include "interrupt.h"
 #include "basicThreadTests.h"
 #include "ULT.h"
+#include "utility.h"
+#include "thread.h"
 
 
-
-
-int 
-main(int argc, char **argv)
+void testThread()
 {
-  basicThreadTests();
-  grandFinale();
-
-  printf("\n\n*** BUG **** Should not get here\n\n");
-  assert(0);
-  return 0;
+	Thread* mythread = ThreadInit(getContext());
+	Tid id = mythread->id;
+	test("created thread uses the correct id", id == 0);
+	test("created thread has a non NULL context", mythread->context != NULL);
+	ThreadFree(mythread);
 }
 
+void testThreadList()
+{
+	
+}
+
+
+int main(int argc, char **argv)
+{
+	testThread();
+	testThreadList();
+	basicThreadTests();
+	grandFinale();
+	error("Should not have returned from grandFinale()!");
+	return 0;
+}
 
 
