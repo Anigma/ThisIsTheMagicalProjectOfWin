@@ -4,7 +4,7 @@
 
 CC	:= gcc 
 CFLAGS	:= -g -Wall -Werror
-TARGETS	:= doTest doTest2 showHandler libULT.a alarmHelper parseUcontext
+TARGETS	:= doTest doTest2 showHandler libULT.a alarmHelper parseUcontext signalme
 TURNIN	:= /lusr/bin/turnin
 GRADER	:= muqeet
 LABNAME	:= handin-372-labULT
@@ -48,6 +48,9 @@ alarmHelper: alarmHelper.c
 	gcc $(CFLAGS) -o $@ $<
 
 parseUcontext: parseUcontext.c 
+	gcc $(CFLAGS) -o $@ $<
+
+signalme: signalme.c 
 	gcc $(CFLAGS) -o $@ $<
 
 doTest.o: doTest.c basicThreadTests.h interrupt.h libULT.a $(MOREH)

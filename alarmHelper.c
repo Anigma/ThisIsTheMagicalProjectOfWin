@@ -9,23 +9,21 @@ long nsToSleep = 10000000;
 
 int main(int argc, char ** argv)
 {
-  pid_t target;
-  int ret;
+	assert(argc == 2);
+	pid_t target = atoi(argv[1]);
+	printf("AlarmHelper will repeatedly signal pid %d\n", target);
 
-  struct timespec delay;
-  delay.tv_sec = 0;
-  delay.tv_nsec = nsToSleep;
+	struct timespec delay;
+	delay.tv_sec = 0;
+	delay.tv_nsec = nsToSleep;
 
-  assert(argc == 2);
-  target = atoi(argv[1]);
-  printf("AlarmHelper will repeatedly signal pid %d\n", target);
-
-  while(1){
-    nanosleep(&delay, NULL);
-    ret = kill(target, SIGALRM);
-    if(ret){
-      perror("(Expect to see this when parent exits): alarmHelper got error on kill. Stopping.");
-      return 0;
-    }
-  }
+	while(1)
+	{
+		nanosleep(&delay, NULL);
+		if(kill(target, SIGALRM))
+		{
+			perror("(Expect to see this when parent exits): alarmHelper got error on kill. Stopping.");
+			return 0;
+		}
+	}
 }

@@ -8,7 +8,6 @@
 #define SOL 99
 #include <ucontext.h>
 
-
 uint getSSSPFromContext(ucontext_t *uc)
 {
 	return (uint) ((uc->uc_stack).ss_sp);
@@ -57,4 +56,3 @@ int main(int argc, char **argv)
 	printf("%.8x Bytes between err and sp in context\n",  ((uint)&err) - ((uint)(getESPFromContext(&mycontext))));
 	return 0;  
 }
-
