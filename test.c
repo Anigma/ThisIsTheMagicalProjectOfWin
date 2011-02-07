@@ -1,12 +1,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include "interrupt.h"
-#include "basicThreadTests.h"
+#include "testULT.h"
 #include "ULT.h"
 #include "utility.h"
 #include "Thread.h"
 #include "ThreadList.h"
-
 
 void testThread()
 {
@@ -21,14 +20,26 @@ void testThreadList()
 {
 	ThreadList* list = ThreadListInit();
 	test("creating threadList", list != NULL);
-	
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
+	//was there a registerHandler() here that accidentally got deleted? -Craig
 	testThread();
 	testThreadList();
-	basicThreadTests();
+	testULT();
+
 	grandFinale();
+	return 0;
+}
+
+//previously doTest2
+int main2(int argc, char** argv)
+{
+	registerHandler();
+	// Make sure basic thread stuff still works
+	testULT();
+	// Test preemptive threads
+	testULTpreemptive();
 	return 0;
 }

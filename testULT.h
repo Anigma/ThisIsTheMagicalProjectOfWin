@@ -1,8 +1,10 @@
 #ifndef _BASIC_THREAD_TESTS_H_
 #define _BASIC_THREAD_TESTS_H_
-void basicThreadTests();
+
+void testULT();
+void testULTpreemptive();
 void grandFinale();
-void preemptiveTests();
 void lockTests();
 void condTests();
+
 #endif 

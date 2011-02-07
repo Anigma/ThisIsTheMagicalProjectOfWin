@@ -4,7 +4,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include "basicThreadTests.h"
+#include "testULT.h"
 #include "interrupt.h"
 #include "ULT.h"
 #include "utility.h"
@@ -23,7 +23,7 @@ static void doPotato(int mySlot);
 static int tryMovePotato(int mySlot);
 static void spin(int secs);
 
-void basicThreadTests()
+void testULT()
 {
 	Tid ret;
 	Tid ret2;
@@ -214,7 +214,7 @@ static int potato[NPOTATO];
 static Tid potatoTids[NPOTATO];
 static const int tPotato = 30;
 
-void preemptiveTests()
+void testULTpreemptive()
 {
 	static const int duration = 10;
 	int ret;
