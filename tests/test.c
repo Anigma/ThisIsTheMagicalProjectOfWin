@@ -1,11 +1,11 @@
 #include <assert.h>
 #include <stdio.h>
-#include "interrupt.h"
+#include "../interrupt.h"
+#include "../ULT.h"
+#include "../utility.h"
+#include "../Thread.h"
+#include "../ThreadList.h"
 #include "testULT.h"
-#include "ULT.h"
-#include "utility.h"
-#include "Thread.h"
-#include "ThreadList.h"
 
 void testThread()
 {
