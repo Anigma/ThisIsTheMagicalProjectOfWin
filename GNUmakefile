@@ -4,7 +4,7 @@
 
 CC	:= gcc 
 CFLAGS	:= -g -Wall -Werror
-TARGETS	:= test showHandler libULT.a alarmHelper parseUcontext signalme
+TARGETS	:= showHandler libULT.a alarmHelper parseUcontext signalme tests
 TURNIN	:= /lusr/bin/turnin
 GRADER	:= muqeet
 LABNAME	:= handin-372-labULT
@@ -53,15 +53,11 @@ parseUcontext: parseUcontext.c
 signalme: signalme.c 
 	gcc $(CFLAGS) -o $@ $<
 
-test.o: test.c testULT.h interrupt.h libULT.a $(MOREH)
-	gcc -c $(CFLAGS) -o $@ $< ULT.o
-
-test: test.o libULT.a testULT.o
-	gcc $(CFLAGS) -o $@ test.o testULT.o $(ULT_LIB)
-
 showHandler.o: showHandler.c interrupt.h libULT.a $(MOREH)
 	gcc -c $(CFLAGS) -o $@ showHandler.c
 
 showHandler: showHandler.o libULT.a
 	gcc $(CFLAGS) -o $@ showHandler.o $(ULT_LIB)
 
+tests: test/
+	$(MAKE) -C test/
