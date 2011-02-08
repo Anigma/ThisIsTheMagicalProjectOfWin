@@ -21,9 +21,13 @@ ucontext_t* contextInit()
 	ucontext_t* context = (ucontext_t*) mallocSafely(sizeof(ucontext_t));
 	context->uc_link = NULL;
 	//context->sigset_t = ??;
-	context->uc_stack->ss_sp = mallocSafely(sizeof(int)*(MIN_STACK));
-	context->uc_stack->ss_size = MIN_STACK;
+	(context->uc_stack).ss_sp = mallocSafely(sizeof(int)*(MIN_STACK));
+	(context->uc_stack).ss_size = MIN_STACK;
 	//context->mcontext_t = ??;
 	return context;
 }
 
+void ThreadStoreContext(Thread* myThread)
+{
+	//assert that the currently running thread is the thread to which we are storing	
+}
