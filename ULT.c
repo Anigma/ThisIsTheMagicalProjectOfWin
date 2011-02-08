@@ -1,14 +1,11 @@
 #include "ULT.h"
 #include "ThreadList.h"
 
-// Thread package state
 int numberOfThreads;
 ThreadList* list;
 ThreadList* zombies;
+
 volatile int initialized = 0;
-
-
-
 void ULT_Initialize()
 {
 	if(initialized) return;
