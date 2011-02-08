@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <pthread.h> // Using posix mutex for some tests of phases 1 and 2
 #include "testULT.h"
-#include "../interrupt.h"
-#include "../ULT.h"
-#include "../utility.h"
+#include "interrupt.h"
+#include "ULT.h"
+#include "utility.h"
 
 static const int verbose = 0;
 static const int vverbose = 0;
