@@ -57,9 +57,23 @@ void verifyContext(ucontext_t* context)
 	assert(sizeof(ucontext_t) == 87*sizeof(int));
 	assert(context->uc_link == NULL);
 	assert(sizeof(sigset_t) == 32*sizeof(int));
-	//TODO not sure what sort of signals we need masked, or how they are represented
+	//TODO not sure what sort of signals we need masked, or how they are representeds
 	verifyStack(&context->uc_stack); //TODO currently fails!!
 	verifyMcontext(&context->uc_mcontext);
+}
+
+
+// Not sure where this goes, but we'll need to build a context for each thread.
+// The first thread's context will be slightly different, we'll see how it goes.
+ucontext_t* contextInit()
+{
+	ucontext_t* context = (ucontext_t*) mallocSafely(sizeof(ucontext_t));
+	context->uc_link = NULL;
+	//context->sigset_t = ??;
+	context->uc_stack->ss_sp = mallocSafely(sizeof(int)*(MIN_STACK));
+	context->uc_stack->ss_size = MIN_STACK;
+	//context->mcontext_t = ??;
+	return context;
 }
 
 void testThread()
@@ -68,7 +82,7 @@ void testThread()
 	Tid id = mythread->id;
 	test("created thread uses the correct id", id == 0);
 	verifyContext(mythread->context);
-	test("thread's context verifies", 1);
+	test("thread's context verifies", 0); //commented asserts in verifyStack fail
 	ThreadFree(mythread);
 }
 
