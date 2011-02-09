@@ -1,13 +1,6 @@
 #include "ULT.h"
 #include "ThreadList.h"
 
-int numberOfThreads;
-
-ThreadList* alive;
-ThreadList* ready;
-ThreadList* zombie;
-
-Thread* runningThread;
 
 volatile int initialized = 0;
 void ULT_Initialize()
@@ -15,10 +8,12 @@ void ULT_Initialize()
 	if(initialized)	return;
 	else		initialized = 1;
 
+	nextTid = 0;
+
+
 	//Create thread lists
-	ThreadListInit(alive);
-	ThreadListInit(ready);
-	ThreadListInit(zombie);
+	alive  = ThreadListInit();
+	zombie = ThreadListInit();
 	
 	//Put current thread in thread list
 	runningThread = ThreadInit(getContext());
@@ -32,12 +27,12 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 {
 	ULT_Initialize();
 
-	if(0 /*no more threads available*/)
+	if(numberOfThreads >= ULT_MAX_THREADS)
 	{
 		return ULT_NOMORE;
 	}
 	//create ucontext_t
-	ucontext_t* context = contextInit();
+	ucontext_t* context = contextInit(fn, parg);
 	if((context->uc_stack).ss_sp == NULL) //could not allocate stack
 	{
 		return ULT_NOMEMORY;
@@ -45,7 +40,7 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 	//put in a thread
 	Thread* thread = ThreadInit(context);
 	//put thread in the readylist
-	//threadListAdd(readylist, thread);
+	ThreadListAddToHead(alive, thread);
 	return thread->id;
 }
 
@@ -53,54 +48,70 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 //Caller is put on the ready queue.
 Tid ULT_Yield(Tid yieldTo)
 {
+
 	ULT_Initialize();
 
 	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
 	{
 		//Yield to self. This turns the function call into an no-op
 		assert(runningThread);
-		return runningThread->id;
+		return ULT_Switch(runningThread);
 	}
 
-	if(yieldTo == ULT_ANY) //Invoke any thread on the ready queue
+	if(yieldTo == ULT_ANY) //Invoke any thread on the ready queue except self
 	{
-		
 		//Take next thread at the head of ready queue and execute it
-		return 0; //return the Tid of the thread yielded to
-		return ULT_NONE; //when no threads on ready list
+		Thread* target = ThreadListRemoveEnd(alive);
+		if (!target || target->id == runningThread->id)
+			return ULT_NONE;
+		
+		ThreadListAddToHead(alive, target);
+		
+		return ULT_Switch(target);
 	}
-	if(yieldTo > 0)
+	if(yieldTo >= 0)
 	{
 		//Search ready queue for thread with tid of wantTid and execute it
-		return yieldTo;
-		return ULT_INVALID; //when the requested thread was not on the ready list
+		Thread* target = ThreadListFind(alive, yieldTo);
+		if (!target) {
+			printf("Trying to yield to a nonexistant thread\n");
+			return ULT_INVALID; //when the requested thread was not on the ready list
+		}		
+		return ULT_Switch(target);
 	}
 	else
 	{
 		//Alert the caller that the identifier tid does not correspond to a valid thread
-		return ULT_FAILED;
+		return ULT_INVALID;
 	}
 }
 
 volatile int doneThat;
 Tid ULT_Switch(Thread *target)
 {
+	//printf("Trying to switch to thread with Tid[%d]\n", target->id);
+
 	ULT_Initialize();
 
        doneThat = 0;
        //save state of current thread to TCB
        //getcontext(&(runningThread->TCB.register)); //returns twice
+       //ThreadStoreContext(runningThread);
+       getcontext(runningThread->context);	
        if(!doneThat)
        {
 	       doneThat = 1;
 	       //choose new thread to run
 	       //int nextID = schedulingPolicy();
 	       //runningThread = &(thread[nextid]);
+	       runningThread = target;
+	       
 	       //copy new thread's TCB to processor
 	       //setcontext(&(thread[nextid]->TCB.register)); //never returns
-	       assert(-1);
+	       ThreadRun(runningThread);
+	       assert(0);
 	}
-	return ULT_FAILED;
+	return runningThread->id;
 }
 
 //destroys the thread whose identifier is tid

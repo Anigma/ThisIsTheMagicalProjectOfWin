@@ -38,6 +38,40 @@ ucontext_t* getContext()
 	return temp;
 }
 
+uint getSSSPFromContext(ucontext_t *uc)
+{
+	return (uint) ((uc->uc_stack).ss_sp);
+}
+
+uint getEIPFromContext(ucontext_t *uc)
+{
+	return (uint) (uc->uc_mcontext).gregs[REG_EIP];
+}
+
+// Craig: I think we want to use this one....
+uint getESPFromContext(ucontext_t *uc)
+{
+	return (uint) (uc->uc_mcontext).gregs[REG_ESP];
+}
+
+uint getUESPFromContext(ucontext_t *uc)
+{
+	return (uint) (uc->uc_mcontext).gregs[REG_UESP];
+}
+
+void printUContext(ucontext_t* mycontext) 
+{
+	uint sssp = getSSSPFromContext(mycontext);
+	uint eip  = getEIPFromContext(mycontext);
+	uint esp  = getESPFromContext(mycontext);
+	uint uesp = getUESPFromContext(mycontext);
+
+	printf("%.8x Address of the EIP in mycontext\n", eip);
+	printf("%.8x Value of sssp\n", sssp);
+	printf("%.8x Value of ESP in greg\n", esp);
+	printf("%.8x Value of UESP in greg\n", uesp);
+}
+
 void printColor(char* string, int attribute, int color)
 {
 	/* 

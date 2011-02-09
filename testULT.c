@@ -33,6 +33,7 @@ void testULT()
 	ret = ULT_Yield(0);
 	test("Initial thread returns from Yield(0)", tidValid(ret));
 	ret = ULT_Yield(ULT_ANY);
+	//printf("ret: %d\n", ret);
 	test("Initial thread returns from Yield(ANY)",ret == ULT_NONE);
 	ret = ULT_Yield(0xDEADBEEF);
 	test("Initial thread returns from Yield(INVALID)", ret == ULT_INVALID);
@@ -40,8 +41,11 @@ void testULT()
 	test("Initial thread returns from Yield(INVALID2)", ret == ULT_INVALID);
 	// Create a thread
 	ret = ULT_CreateThread((void (*)(void *))hello, "World");
+	//printf("ret: %d\n", ret);
 	test("Creates a basic hello world thread", tidValid(ret));
+printf("Now yielding\n"); fflush(stdout);
 	ret2 = ULT_Yield(ret);
+	printf("ret: %d\n", ret2);
 	test("Yielding to this thread returns the correct Tid", ret2 == ret);
 	// Create 10 threads
 	static const int NTHREAD = 10;

@@ -1,7 +1,6 @@
 #ifndef thread_h_
 #define thread_h_
 
-#include <ucontext.h>
 #include <stdlib.h>
 #include "utility.h"
 
@@ -39,10 +38,12 @@ typedef struct ThreadStruct
 
 //Constructors
 Thread* ThreadInit(ucontext_t* context);
-ucontext_t* contextInit();
+ucontext_t* contextInit(void(*fn) (void*), void* parg);
 
 //Destructor
 void ThreadFree(Thread* thread);
 
+void ThreadStoreContext(Thread* thread);
+void ThreadRun(Thread* thread);
 
 #endif

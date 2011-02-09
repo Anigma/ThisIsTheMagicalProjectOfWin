@@ -85,13 +85,19 @@ Thread* ThreadListRemove(ThreadList* list, Tid id)
 	{
 		if(node->thread->id == id)
 		{
+			if (!node->previous /* If found node == head */) {
+				list->head = node->next;
+				list->head->previous = NULL;
+				return node->thread;
+			}
+		
 			//excise from list
 			node->previous->next = node->next;
 			node->next->previous = node->previous;
 
 			//return the thread and destroy the node
 			Thread* thread = node->thread;
-			free(node);
+			//free(node);
 			return thread;
 		}
 	}
@@ -107,11 +113,17 @@ Thread* ThreadListRemoveEnd(ThreadList* list)
 	ThreadListNode* node = list->head;
 	if(node == NULL) return NULL; //list is empty
 
+	if (!node->next) {
+		list->head = NULL;
+		return node->thread;
+	}
 
 	while(node->next) node = node->next;
+	
 	node->previous->next = NULL;
 	Thread* thread = node->thread;
-	free(node);
+	
+	//free(node);
 	return thread;	
 }
 

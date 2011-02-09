@@ -32,10 +32,10 @@ libULT.a: $(ULT_OBJS)
 utility.o: utility.c utility.h
 	gcc -c $(CFLAGS) -o $@ $<
 
-thread.o: thread.c thread.h
+Thread.o: Thread.c Thread.h
 	gcc -c $(CFLAGS) -o $@ $<
 
-threadList.o: threadList.c threadList.h
+ThreadList.o: ThreadList.c ThreadList.h
 	gcc -c $(CFLAGS) -o $@ $<
 
 ULT.o: ULT.c ULT.h

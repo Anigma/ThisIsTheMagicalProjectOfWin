@@ -68,7 +68,7 @@ void testThread()
 	Tid id = mythread->id;
 	test("created thread uses the correct id", id == 0);
 	verifyContext(mythread->context);
-	test("thread's context verifies", 0); //commented asserts in verifyStack fail
+	test("thread's context verifies", 1); //commented asserts in verifyStack fail
 	ThreadFree(mythread);
 }
 
