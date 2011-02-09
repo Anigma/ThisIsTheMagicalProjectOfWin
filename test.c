@@ -75,6 +75,8 @@ void testThread()
 void testThreadList()
 {
 	ThreadList* list = ThreadListInit();
+	test("creating threadList", list != NULL);
+	Tid first = nextTid;
 	int i;
 	for(i=0; i<10; i++)
 	{
@@ -82,12 +84,18 @@ void testThreadList()
 	}
 
 	Tid id;
-	id = ThreadListRemove(list, 6)->id;
-	test("removed thread from list", id == 6);
-	Thread* none = ThreadListRemove(list, 6);
-	test("removed thread from list", none == NULL );
-	
-	test("creating threadList", list != NULL);
+	id = ThreadListRemove(list, first+5)->id;
+	test("removed thread from list", id == first+5);
+	Thread* none = ThreadListRemove(list, first+5);
+	test("don't remove a non-existant Tid from list", none == NULL);
+	ThreadListAddToHead(list, ThreadInit(getContext()));
+	test("add another node to the the list", 1);
+	Thread* thread = ThreadListFind(list, first+4);
+	test("find a thread from the list, don't remove", thread->id == first+4);
+	thread = ThreadListRemoveEnd(list);
+	test("remove from end of list", thread->id == first);
+	ThreadListFree(list);
+	test("freed list", 1);	
 }
 
 int main(int argc, char** argv)
