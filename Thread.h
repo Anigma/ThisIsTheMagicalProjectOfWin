@@ -37,6 +37,7 @@ typedef struct ThreadStruct
 
 Thread* ThreadInit(ucontext_t* context);
 void ThreadFree(Thread* thread);
+ucontext_t* contextInit();
 
 
 #endif

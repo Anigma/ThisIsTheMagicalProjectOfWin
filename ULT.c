@@ -18,13 +18,26 @@ void ULT_Initialize()
 	ThreadListAdd(firstThread, list);
 }
 
-Tid ULT_CreateThread(void (*fn)(void *), void *parg)
+//Creates a thread that will start off running fn, returning the Tid of the new thread
+//The created thread is put on a ready queue but does not start execution yet.
+//The caller of the function continues to execute after the function returns.
+Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 {
+	if(0 /*no more threads available*/)
+	{
+		return ULT_NOMORE;
+	}
 	//create ucontext_t
+	ucontext_t* context = contextInit();
+	if((context->uc_stack).ss_sp == NULL) //could not allocate stack
+	{
+		return ULT_NOMEMORY;
+	}
 	//put in a thread
-	//put thread in list
-
-	return ULT_FAILED;
+	Thread* thread = ThreadInit(context);
+	//put thread in the readylist
+	//threadListAdd(readylist, thread);
+	return thread->id;
 }
 
 //Suspends the caller and activates the thread given by id.
@@ -76,7 +89,26 @@ Tid ULT_Switch(Thread *target)
 	return ULT_FAILED;
 }
 
+//destroys the thread whose identifier is tid
+//caller continues to execute and receives the result
 Tid ULT_DestroyThread(Tid tid)
 {
+	if(tid == ULT_ANY)
+	{
+		//destroy any thread except the caller
+		//if there are no more other threads available to destroy, return ULT_NONE
+
+	}
+	else if(tid == ULT_SELF)
+	{
+		//destroy the caller, function does not return
+		// ZOMBIES!
+		//schedule another to run
+	}
+	else if(tid > 0)
+	{
+		//destroy the thread with id tid
+		//if thread not on list return ULT_INVALID
+	}
 	return ULT_FAILED;
 }

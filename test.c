@@ -62,7 +62,6 @@ void verifyContext(ucontext_t* context)
 	verifyMcontext(&context->uc_mcontext);
 }
 
-
 void testThread()
 {
 	Thread* mythread = ThreadInit(getContext());

@@ -21,7 +21,8 @@ ucontext_t* contextInit()
 	ucontext_t* context = (ucontext_t*) mallocSafely(sizeof(ucontext_t));
 	context->uc_link = NULL;
 	//context->sigset_t = ??;
-	(context->uc_stack).ss_sp = mallocSafely(sizeof(int)*(MIN_STACK));
+	(context->uc_stack).ss_sp = calloc(sizeof(int)*(MIN_STACK), 1);
+	//not using mallocSafely because we need to be able to return ULT_NOMEMORY from ULT_createThread 
 	(context->uc_stack).ss_size = MIN_STACK;
 	//context->mcontext_t = ??;
 	return context;
