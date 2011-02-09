@@ -78,7 +78,7 @@ void testThreadList()
 	int i;
 	for(i=0; i<10; i++)
 	{
-		list = ThreadListAddToHead(list, ThreadInit(getContext()));
+		ThreadListAddToHead(list, ThreadInit(getContext()));
 	}
 
 	Tid id;

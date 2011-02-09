@@ -8,11 +8,16 @@
 #include "utility.h"
 
 //A doubly-linked list of threads
+typedef struct ThreadListNode_
+{
+	struct ThreadListNode_*	next;
+	struct ThreadListNode_*	previous;
+	Thread*			thread;	
+} ThreadListNode;
+
 typedef struct ThreadList_
 {
-	struct ThreadList_*	next;
-	struct ThreadList_*	previous;
-	Thread*			thread;	
+	ThreadListNode* head;
 } ThreadList;
 
 //Constructor
@@ -21,8 +26,8 @@ ThreadList* ThreadListInit();
 //Destructor
 void ThreadListFree(ThreadList* list);
 
-//Add to the head of the list, return the new list pointer
-ThreadList* ThreadListAddToHead(ThreadList* list, Thread* thread);
+//Add to the head of the list
+void ThreadListAddToHead(ThreadList* list, Thread* thread);
 
 //Return thread by Tid
 Thread* ThreadListFind(ThreadList* list, Tid id);

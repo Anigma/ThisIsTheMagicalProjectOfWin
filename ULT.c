@@ -22,7 +22,7 @@ void ULT_Initialize()
 	
 	//Put current thread in thread list
 	runningThread = ThreadInit(getContext());
-	alive = ThreadListAddToHead(alive, runningThread);
+	ThreadListAddToHead(alive, runningThread);
 }
 
 //Creates a thread that will start off running fn, returning the Tid of the new thread

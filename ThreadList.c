@@ -1,36 +1,58 @@
 #include "ThreadList.h"
 
-//Constructor
+//Constructors
+ThreadListNode* ThreadListNodeInit()
+{
+	ThreadListNode* node = (ThreadListNode*) mallocSafely(sizeof(ThreadListNode));
+	node->next = NULL;
+	node->previous = NULL;
+	node->thread = NULL;
+	return node;
+}
+
 ThreadList* ThreadListInit()
 {
 	ThreadList* list = (ThreadList*) mallocSafely(sizeof(ThreadList));
-	list->next = NULL;
-	list->previous = NULL;
-	list->thread = NULL;
+	list->head = NULL;
 	return list;
 }
 
 //Destructor
+void ThreadListNodeFree(ThreadListNode* node)
+{
+	assert(node);
+
+	if(node->next != NULL)
+		ThreadListNodeFree(node->next);
+	free(node);
+}
+
 void ThreadListFree(ThreadList* list)
 {
-	assert(list);	
-
-	if(list->next != NULL)
-		ThreadListFree(list->next);
+	if(list->head) ThreadListNodeFree(list->head);
 	free(list);
 }
 
 //Add to the head of the list, return the new list pointer
-ThreadList* ThreadListAddToHead(ThreadList* list, Thread* thread)
+void ThreadListAddToHead(ThreadList* list, Thread* thread)
 {
 	assert(list);
 	assert(thread);
 
-	ThreadList* temp 	= ThreadListInit();
-	temp->thread 		= thread;
-	temp->next		= list;
-	list->previous		= temp;
-	return temp;
+	//Create a new node to add
+	ThreadListNode* node 	= ThreadListNodeInit();
+	node->thread 		= thread;
+	node->previous		= NULL;
+
+	//If there is something in the list, preserve the linkage
+	if(list->head)
+	{
+		list->head->previous	= node;
+		node->next		= list->head;
+	}
+	
+	//Put the new node at the head of the list
+	list->head = node;
 }
 
 //Return thread by Tid
@@ -39,11 +61,14 @@ Thread* ThreadListFind(ThreadList* list, Tid id)
 	assert(list);
 	assert(tidValid(id));
 
+	ThreadListNode* node = list->head;
+	if(node == NULL) return NULL; //list is empty
+
 	do
 	{
-		if(list->thread->id == id) return list->thread;
+		if(node->thread->id == id) return node->thread;
 	}
-	while((list = list->next));
+	while((node = node->next));
 	return NULL;
 }
 
@@ -51,10 +76,11 @@ Thread* ThreadListFind(ThreadList* list, Tid id)
 Thread* ThreadListRemove(ThreadList* list, Tid id)
 {
 	assert(list);
-	assert(list->thread);
 	assert(tidValid(id));
 
-	ThreadList* node = list;
+	ThreadListNode* node = list->head;
+	if(node == NULL) return NULL; //list is empty
+
 	do
 	{
 		if(node->thread->id == id)
@@ -65,8 +91,7 @@ Thread* ThreadListRemove(ThreadList* list, Tid id)
 
 			//return the thread and destroy the node
 			Thread* thread = node->thread;
-			node->next = NULL;
-			ThreadListFree(node);
+			free(node);
 			return thread;
 		}
 	}
@@ -79,7 +104,10 @@ Thread* ThreadListRemoveEnd(ThreadList* list)
 {
 	assert(list);
 
-	ThreadList* node = list;
+	ThreadListNode* node = list->head;
+	if(node == NULL) return NULL; //list is empty
+
+
 	while(node->next) node = node->next;
 	node->previous->next = NULL;
 	Thread* thread = node->thread;
