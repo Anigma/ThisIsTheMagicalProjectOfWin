@@ -2,20 +2,29 @@
 #include "ThreadList.h"
 
 int numberOfThreads;
-ThreadList* list;
-ThreadList* zombies;
+
+ThreadList* alive;
+ThreadList* ready;
+ThreadList* zombie;
+
+Thread* runningThread;
 
 volatile int initialized = 0;
 void ULT_Initialize()
 {
 	if(initialized) return;
+	intialized = 1;
 
-	//Create thread list
-	ThreadListInit(list);
+	//Create thread lists
+	ThreadListInit(alive);
+	ThreadListInit(ready);
+	ThreadListInit(zombie);
+
+	//Init runningThread from the current thread!
 	
 	//Put current thread in thread list
 	Thread* firstThread = ThreadInit(getContext());
-	ThreadListAdd(firstThread, list);
+	alive = ThreadListAddToHead(alive, firstThread);
 }
 
 //Creates a thread that will start off running fn, returning the Tid of the new thread
@@ -46,12 +55,13 @@ Tid ULT_Yield(Tid yieldTo)
 {
 	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
 	{
-		//Yield to self
-		//This turns the function call into an no-op
+		//Yield to self. This turns the function call into an no-op
+		return runningThread->id;
 	}
 
 	if(yieldTo == ULT_ANY) //Invoke any thread on the ready queue
 	{
+		
 		//Take next thread at the head of ready queue and execute it
 		return 0; //return the Tid of the thread yielded to
 		return ULT_NONE; //when no threads on ready list

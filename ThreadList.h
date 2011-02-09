@@ -7,21 +7,30 @@
 #include "Thread.h"
 #include "utility.h"
 
-//Consider private, for internal use only
-typedef struct ThreadListNodeStruct
+//A doubly-linked list of threads
+typedef struct ThreadList_
 {
-	struct ThreadListNodeStruct*	next;
-	Thread*				thread;	
-} ThreadListNode;
-
-typedef struct ThreadListStruct
-{
-	ThreadListNode* head;
+	struct ThreadList_*	next;
+	struct ThreadList_*	previous;
+	Thread*			thread;	
 } ThreadList;
-  
+
+//Constructor
 ThreadList* ThreadListInit();
-void ThreadListAdd(Thread* thread, ThreadList* list);
-void ThreadListRemove(Tid id, ThreadList* list);
-Thread* ThreadListFind(Tid id, ThreadList* list);
+
+//Destructor
+void ThreadListFree(ThreadList* list);
+
+//Add to the head of the list, return the new list pointer
+ThreadList* ThreadListAddToHead(ThreadList* list, Thread* thread);
+
+//Return by Tid
+Thread* ThreadListFind(ThreadList* list, Tid id);
+
+//Remove and return by Tid
+Thread* ThreadListRemove(ThreadList* list, Tid id);
+
+//Remove and return the end of the list
+Thread* ThreadListRemoveEnd(ThreadList* list);
 
 #endif

@@ -1,68 +1,76 @@
 #include "ThreadList.h"
 
+
+
+//Constructor
 ThreadList* ThreadListInit()
 {
 	ThreadList* list = (ThreadList*) mallocSafely(sizeof(ThreadList));
-	list->head = NULL;
+	list->next = NULL;
+	list->previous = NULL;
+	list->thread = NULL;
 	return list;
 }
 
+//Destructor
 void ThreadListFree(ThreadList* list)
 {
-	assert(list->head == NULL);
+	if(list->next != NULL)
+		ThreadListFree(list->next);
 	free(list);
 }
 
-void ThreadListAdd(Thread* thread, ThreadList* list)
+//Add to the head of the list, return the new list pointer
+ThreadList* ThreadListAddToHead(ThreadList* list, Thread* thread)
 {
-	//Create the new node
-	ThreadListNode* newNode = (ThreadListNode*) mallocSafely(sizeof(ThreadListNode));
-	newNode->thread = thread;
-
-	//Add node to the head
-	newNode->next = list->head;
-	list->head = newNode;
+	ThreadList* temp 	= ThreadListInit();
+	temp->thread 		= thread;
+	temp->next		= list;
+	return temp;
 }
 
-Thread* ThreadListFind(Tid id, ThreadList* list)
+//Return by Tid
+Thread* ThreadListFind(ThreadList* list, Tid id)
 {
-	ThreadListNode* node = list->head;
-	while(node)
+	do
 	{
-		if(node->thread->id == id) return node->thread;
-		node = node->next;
+		if(list->thread->id == id) return list->thread;
 	}
+	while((list = list->next));
 	return NULL;
 }
 
-void ThreadListRemove(Tid id, ThreadList* list)
+//Remove and return by Tid
+Thread* ThreadListRemove(ThreadList* list, Tid id)
 {
-	ThreadListNode* node = list->head;
-	ThreadListNode* prev = NULL;
-	while(node)
+	ThreadList* node = list;
+	do
 	{
-		if(node->thread == NULL) error("Node is degenerate!");
 		if(node->thread->id == id)
-		{	
-			//This one must fix the head
-			if(prev == NULL)
-			{
-				list->head = node->next;
-			}
+		{
+			//excise from list
+			node->previous->next = node->next;
+			node->next->previous = node->previous;
 
-			//Past the head
-			else
-			{
-				prev->next = node->next;
-			}
-
-			ThreadFree(node->thread);
-			free(node);
+			//return the thread and destroy the node
+			Thread* thread = node->thread;
+			node->next = NULL;
+			ThreadListFree(node);
+			return thread;
 		}
-		//Try the next one
-		prev = node;
-		node = node->next;
-		
 	}
-	error("Tried to remove a thread from a list that does not contain that thread!");
+	while((node = node->next));
+	return NULL;
 }
+
+//Remove and return the end of the list
+Thread* ThreadListRemoveEnd(ThreadList* list)
+{
+	ThreadList* node = list;
+	while(node->next) node = node->next;
+	node->previous->next = NULL;
+	Thread* thread = node->thread;
+	free(node);
+	return thread;	
+}
+
