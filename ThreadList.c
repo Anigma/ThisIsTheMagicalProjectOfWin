@@ -1,7 +1,5 @@
 #include "ThreadList.h"
 
-
-
 //Constructor
 ThreadList* ThreadListInit()
 {
@@ -15,6 +13,8 @@ ThreadList* ThreadListInit()
 //Destructor
 void ThreadListFree(ThreadList* list)
 {
+	assert(list);	
+
 	if(list->next != NULL)
 		ThreadListFree(list->next);
 	free(list);
@@ -23,15 +23,22 @@ void ThreadListFree(ThreadList* list)
 //Add to the head of the list, return the new list pointer
 ThreadList* ThreadListAddToHead(ThreadList* list, Thread* thread)
 {
+	assert(list);
+	assert(thread);
+
 	ThreadList* temp 	= ThreadListInit();
 	temp->thread 		= thread;
 	temp->next		= list;
+	list->previous		= temp;
 	return temp;
 }
 
-//Return by Tid
+//Return thread by Tid
 Thread* ThreadListFind(ThreadList* list, Tid id)
 {
+	assert(list);
+	assert(tidValid(id));
+
 	do
 	{
 		if(list->thread->id == id) return list->thread;
@@ -40,9 +47,13 @@ Thread* ThreadListFind(ThreadList* list, Tid id)
 	return NULL;
 }
 
-//Remove and return by Tid
+//Remove and return thread by Tid
 Thread* ThreadListRemove(ThreadList* list, Tid id)
 {
+	assert(list);
+	assert(list->thread);
+	assert(tidValid(id));
+
 	ThreadList* node = list;
 	do
 	{
@@ -66,6 +77,8 @@ Thread* ThreadListRemove(ThreadList* list, Tid id)
 //Remove and return the end of the list
 Thread* ThreadListRemoveEnd(ThreadList* list)
 {
+	assert(list);
+
 	ThreadList* node = list;
 	while(node->next) node = node->next;
 	node->previous->next = NULL;

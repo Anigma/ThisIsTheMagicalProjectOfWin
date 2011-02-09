@@ -12,19 +12,17 @@ Thread* runningThread;
 volatile int initialized = 0;
 void ULT_Initialize()
 {
-	if(initialized) return;
-	intialized = 1;
+	if(initialized)	return;
+	else		initialized = 1;
 
 	//Create thread lists
 	ThreadListInit(alive);
 	ThreadListInit(ready);
 	ThreadListInit(zombie);
-
-	//Init runningThread from the current thread!
 	
 	//Put current thread in thread list
-	Thread* firstThread = ThreadInit(getContext());
-	alive = ThreadListAddToHead(alive, firstThread);
+	runningThread = ThreadInit(getContext());
+	alive = ThreadListAddToHead(alive, runningThread);
 }
 
 //Creates a thread that will start off running fn, returning the Tid of the new thread
@@ -32,6 +30,8 @@ void ULT_Initialize()
 //The caller of the function continues to execute after the function returns.
 Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 {
+	ULT_Initialize();
+
 	if(0 /*no more threads available*/)
 	{
 		return ULT_NOMORE;
@@ -53,9 +53,12 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 //Caller is put on the ready queue.
 Tid ULT_Yield(Tid yieldTo)
 {
+	ULT_Initialize();
+
 	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
 	{
 		//Yield to self. This turns the function call into an no-op
+		assert(runningThread);
 		return runningThread->id;
 	}
 
@@ -82,6 +85,8 @@ Tid ULT_Yield(Tid yieldTo)
 volatile int doneThat;
 Tid ULT_Switch(Thread *target)
 {
+	ULT_Initialize();
+
        doneThat = 0;
        //save state of current thread to TCB
        //getcontext(&(runningThread->TCB.register)); //returns twice
@@ -102,6 +107,8 @@ Tid ULT_Switch(Thread *target)
 //caller continues to execute and receives the result
 Tid ULT_DestroyThread(Tid tid)
 {
+	ULT_Initialize();
+
 	if(tid == ULT_ANY)
 	{
 		//destroy any thread except the caller

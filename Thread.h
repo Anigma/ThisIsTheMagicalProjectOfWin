@@ -37,8 +37,12 @@ typedef struct ThreadStruct
 	Tid id;
 } Thread;
 
+//Constructors
 Thread* ThreadInit(ucontext_t* context);
-void ThreadFree(Thread* thread);
 ucontext_t* contextInit();
+
+//Destructor
+void ThreadFree(Thread* thread);
+
 
 #endif

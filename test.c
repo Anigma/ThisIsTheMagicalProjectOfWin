@@ -75,6 +75,18 @@ void testThread()
 void testThreadList()
 {
 	ThreadList* list = ThreadListInit();
+	int i;
+	for(i=0; i<10; i++)
+	{
+		list = ThreadListAddToHead(list, ThreadInit(getContext()));
+	}
+
+	Tid id;
+	id = ThreadListRemove(list, 6)->id;
+	test("removed thread from list", id == 6);
+	Thread* none = ThreadListRemove(list, 6);
+	test("removed thread from list", none == NULL );
+	
 	test("creating threadList", list != NULL);
 }
 

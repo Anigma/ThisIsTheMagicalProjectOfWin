@@ -24,10 +24,10 @@ void ThreadListFree(ThreadList* list);
 //Add to the head of the list, return the new list pointer
 ThreadList* ThreadListAddToHead(ThreadList* list, Thread* thread);
 
-//Return by Tid
+//Return thread by Tid
 Thread* ThreadListFind(ThreadList* list, Tid id);
 
-//Remove and return by Tid
+//Remove and return thread by Tid
 Thread* ThreadListRemove(ThreadList* list, Tid id);
 
 //Remove and return the end of the list
