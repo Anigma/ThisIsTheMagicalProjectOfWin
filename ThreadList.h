@@ -7,6 +7,7 @@
 #include "Thread.h"
 #include "utility.h"
 
+//Consider private, for internal use only
 typedef struct ThreadListNodeStruct
 {
 	struct ThreadListNodeStruct*	next;

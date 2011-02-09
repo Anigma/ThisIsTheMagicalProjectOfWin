@@ -72,7 +72,6 @@ Tid ULT_Yield(Tid yieldTo)
 volatile int doneThat;
 Tid ULT_Switch(Thread *target)
 {
-
        doneThat = 0;
        //save state of current thread to TCB
        //getcontext(&(runningThread->TCB.register)); //returns twice
