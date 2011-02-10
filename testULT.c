@@ -43,7 +43,7 @@ void testULT()
 	ret = ULT_CreateThread((void (*)(void *))hello, "World");
 	//printf("ret: %d\n", ret);
 	test("Creates a basic hello world thread", tidValid(ret));
-printf("Now yielding\n"); fflush(stdout);
+//printf("Now yielding\n"); fflush(stdout);
 	ret2 = ULT_Yield(ret);
 	printf("ret: %d\n", ret2);
 	test("Yielding to this thread returns the correct Tid", ret2 == ret);

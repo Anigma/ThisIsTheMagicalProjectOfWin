@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include "utility.h"
 
+
+extern void stub(void (*root)(void *), void *arg);
+
 static const int MIN_STACK = 32768;
 
 // Thread identifiers 
@@ -46,4 +49,6 @@ void ThreadFree(Thread* thread);
 void ThreadStoreContext(Thread* thread);
 void ThreadRun(Thread* thread);
 
+
+void verifyContext(ucontext_t* context);
 #endif

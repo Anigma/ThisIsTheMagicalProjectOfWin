@@ -2,6 +2,17 @@
 #include "ThreadList.h"
 
 
+//New theads must run stub
+//Destroyed implicitly when it returns to stub
+void stub(void (*root)(void *), void *arg)
+{
+	root(arg); // Thread starts by calling root function
+	Tid ret = ULT_DestroyThread(ULT_SELF);
+	assert(ret == ULT_NONE); // we should only get here if we are the last thread.
+	exit(0); // all threads are done, so process should exit 
+}
+
+
 volatile int initialized = 0;
 void ULT_Initialize()
 {
@@ -89,7 +100,7 @@ Tid ULT_Yield(Tid yieldTo)
 volatile int doneThat;
 Tid ULT_Switch(Thread *target)
 {
-	//printf("Trying to switch to thread with Tid[%d]\n", target->id);
+	printf("Trying to switch to thread with Tid[%d]\n", target->id);
 
 	ULT_Initialize();
 

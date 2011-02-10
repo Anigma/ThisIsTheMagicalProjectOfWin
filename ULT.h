@@ -30,5 +30,6 @@ Tid ULT_CreateThread(void (*fn)(void*), void* parg);
 Tid ULT_Yield(Tid tid);
 Tid ULT_Switch(Thread* target);
 Tid ULT_DestroyThread(Tid tid);
+void stub(void (*root)(void *), void *arg);
 
 #endif
