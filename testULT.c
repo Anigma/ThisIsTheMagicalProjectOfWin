@@ -41,7 +41,7 @@ void testULT()
 	test("Initial thread returns from Yield(INVALID2)", ret == ULT_INVALID);
 	// Create a thread
 	ret = ULT_CreateThread((void (*)(void *))hello, "World");
-	//printf("ret: %d\n", ret);
+	printf("ret: %d\n", ret);
 	test("Creates a basic hello world thread", tidValid(ret));
 //printf("Now yielding\n"); fflush(stdout);
 	ret2 = ULT_Yield(ret);
@@ -87,11 +87,12 @@ void testULT()
 		ret = ULT_CreateThread((void (*)(void *))fact, (void *)10);
 		childrenOkay &= (tidValid(ret));
 	}
+	printf("numberOfThreads = %d\n", numberOfThreads);
 	test("Creating all available threads", childrenOkay);
 	// Now we're out of threads. Next create should fail.
 	ret = ULT_CreateThread((void (*)(void *))fact, (void *)10);
 	test("Create fails when out of threads", ret == ULT_NOMORE);
-	// Now let them all run.
+	// Now lets them all run.
 	for(i = 0; i < ULT_MAX_THREADS; i++)
 	{
 		ret = ULT_Yield(i);

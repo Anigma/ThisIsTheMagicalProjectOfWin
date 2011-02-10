@@ -38,4 +38,7 @@ Thread* ThreadListRemove(ThreadList* list, Tid id);
 //Remove and return the end of the list
 Thread* ThreadListRemoveEnd(ThreadList* list);
 
+//Print the tids on the list in order
+void ThreadListPrint(ThreadList* list);
+
 #endif

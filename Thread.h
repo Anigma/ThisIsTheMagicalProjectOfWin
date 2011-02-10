@@ -49,6 +49,5 @@ void ThreadFree(Thread* thread);
 void ThreadStoreContext(Thread* thread);
 void ThreadRun(Thread* thread);
 
-
 void verifyContext(ucontext_t* context);
 #endif

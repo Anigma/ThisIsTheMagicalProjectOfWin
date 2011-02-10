@@ -14,15 +14,13 @@
 #include "utility.h"
 #include "interrupt.h"
 
+static const int ULT_MAX_THREADS = 1024;
 int numberOfThreads;
 
 ThreadList* alive;
 ThreadList* zombie;
 
 Thread* runningThread;
-
-// Some constraints on behavior
-static const int ULT_MAX_THREADS = 1024;
 
 // We must implement these
 void ULT_Initialize();

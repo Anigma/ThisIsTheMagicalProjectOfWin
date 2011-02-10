@@ -1,7 +1,6 @@
 #include "ULT.h"
 #include "ThreadList.h"
 
-
 //New theads must run stub
 //Destroyed implicitly when it returns to stub
 void stub(void (*root)(void *), void *arg)
@@ -12,23 +11,39 @@ void stub(void (*root)(void *), void *arg)
 	exit(0); // all threads are done, so process should exit 
 }
 
-
-volatile int initialized = 0;
-void ULT_Initialize()
+//Initialize if called for the first time. Otherwise, hunt for zombies.
+volatile int Maintainenced = 0;
+void ULT_Maintainence()
 {
-	if(initialized)	return;
-	else		initialized = 1;
+	if(Maintainenced) //hunt for zombies
+	{
+		Thread* thread;
+		while((thread = ThreadListRemoveEnd(zombie)))
+		{
+			printf("BANG!\n");
+			ThreadFree(thread);
+		}
 
-	nextTid = 0;
+		assert(zombie->head == NULL);
 
+		return;
+	}
+	else //initialize package
+	{
+		Maintainenced = 1;
 
-	//Create thread lists
-	alive  = ThreadListInit();
-	zombie = ThreadListInit();
+		nextTid = 0;
+
+		//Create thread lists
+		alive  = ThreadListInit();
+		zombie = ThreadListInit();
 	
-	//Put current thread in thread list
-	runningThread = ThreadInit(getContext());
-	ThreadListAddToHead(alive, runningThread);
+		//Put current thread in thread list
+		runningThread = ThreadInit(getContext());
+		ThreadListAddToHead(alive, runningThread);
+
+		numberOfThreads++;
+	}
 }
 
 //Creates a thread that will start off running fn, returning the Tid of the new thread
@@ -36,7 +51,7 @@ void ULT_Initialize()
 //The caller of the function continues to execute after the function returns.
 Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 {
-	ULT_Initialize();
+	ULT_Maintainence();
 
 	if(numberOfThreads >= ULT_MAX_THREADS)
 	{
@@ -52,6 +67,8 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 	Thread* thread = ThreadInit(context);
 	//put thread in the readylist
 	ThreadListAddToHead(alive, thread);
+
+	numberOfThreads++;
 	return thread->id;
 }
 
@@ -59,8 +76,13 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 //Caller is put on the ready queue.
 Tid ULT_Yield(Tid yieldTo)
 {
+	ULT_Maintainence();
 
-	ULT_Initialize();
+	//printf("alive list in yield:");
+	//ThreadListPrint(alive);
+
+	assert(alive->head);
+
 
 	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
 	{
@@ -73,8 +95,12 @@ Tid ULT_Yield(Tid yieldTo)
 	{
 		//Take next thread at the head of ready queue and execute it
 		Thread* target = ThreadListRemoveEnd(alive);
-		if (!target || target->id == runningThread->id)
+		if (!target)
 			return ULT_NONE;
+		if (target->id == runningThread->id) {
+			ThreadListAddToHead(alive, target);
+			return ULT_NONE;
+		}
 		
 		ThreadListAddToHead(alive, target);
 		
@@ -102,7 +128,7 @@ Tid ULT_Switch(Thread *target)
 {
 	printf("Trying to switch to thread with Tid[%d]\n", target->id);
 
-	ULT_Initialize();
+	ULT_Maintainence();
 
        doneThat = 0;
        //save state of current thread to TCB
@@ -122,31 +148,67 @@ Tid ULT_Switch(Thread *target)
 	       ThreadRun(runningThread);
 	       assert(0);
 	}
-	return runningThread->id;
+	return target->id;
 }
 
 //destroys the thread whose identifier is tid
 //caller continues to execute and receives the result
 Tid ULT_DestroyThread(Tid tid)
 {
-	ULT_Initialize();
+	ULT_Maintainence();
 
 	if(tid == ULT_ANY)
 	{
 		//destroy any thread except the caller
 		//if there are no more other threads available to destroy, return ULT_NONE
+		if (alive->head->next == NULL)
+			return ULT_NONE;
 
+		Thread* target;
+		do {
+			target = ThreadListRemoveEnd(alive);
+			if (!target)
+				return ULT_NONE;
+
+			ThreadListAddToHead(alive, target);
+		} while (target->id == runningThread->id);
+
+		ThreadListRemove(alive, target->id);
+		ThreadListAddToHead(zombie, target);
+		numberOfThreads--;
+
+		printf("Thead[%d] zombified\n", target->id);
+
+		return target->id;
 	}
 	else if(tid == ULT_SELF)
 	{
 		//destroy the caller, function does not return
 		// ZOMBIES!
 		//schedule another to run
+		ThreadListRemove(alive, runningThread->id);
+		ThreadListAddToHead(zombie, runningThread);
+		numberOfThreads--;
+
+		printf("Thead[%d] zombified\n", runningThread->id);
+	
+		ULT_Yield(ULT_ANY);		
 	}
 	else if(tid > 0)
 	{
 		//destroy the thread with id tid
-		//if thread not on list return ULT_INVALID
+		Thread* target = ThreadListFind(alive, tid);
+		
+		if (!target)
+			return ULT_INVALID;
+	
+		ThreadListRemove(alive, target->id);
+		ThreadListAddToHead(zombie, target);
+		numberOfThreads--;
+
+		printf("Thead[%d] zombified\n", target->id);
+
+		return target->id;
 	}
 	return ULT_FAILED;
 }
