@@ -20,7 +20,7 @@ void ULT_Maintainence()
 		Thread* thread;
 		while((thread = ThreadListRemoveEnd(zombie)))
 		{
-			printf("BANG!\n");
+			//printf("BANG!\n");
 			ThreadFree(thread);
 		}
 
@@ -35,7 +35,7 @@ void ULT_Maintainence()
 		nextTid = 0;
 
 		//Create thread lists
-		alive  = ThreadListInit();
+		alive = ThreadListInit();
 		zombie = ThreadListInit();
 	
 		//Put current thread in thread list
@@ -84,7 +84,7 @@ Tid ULT_Yield(Tid yieldTo)
 	assert(alive->head);
 
 
-	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
+	if(yieldTo == ULT_SELF) //Continue the execution of the caller
 	{
 		//Yield to self. This turns the function call into an no-op
 		assert(runningThread);
@@ -95,15 +95,14 @@ Tid ULT_Yield(Tid yieldTo)
 	{
 		//Take next thread at the head of ready queue and execute it
 		Thread* target = ThreadListRemoveEnd(alive);
-		if (!target)
-			return ULT_NONE;
-		if (target->id == runningThread->id) {
+		if (!target) return ULT_NONE;
+		if (target->id == runningThread->id)
+		{
 			ThreadListAddToHead(alive, target);
 			return ULT_NONE;
 		}
 		
-		ThreadListAddToHead(alive, target);
-		
+		ThreadListAddToHead(alive, target);	
 		return ULT_Switch(target);
 	}
 	if(yieldTo >= 0)
@@ -111,7 +110,7 @@ Tid ULT_Yield(Tid yieldTo)
 		//Search ready queue for thread with tid of wantTid and execute it
 		Thread* target = ThreadListFind(alive, yieldTo);
 		if (!target) {
-			printf("Trying to yield to a nonexistant thread\n");
+			//printf("Trying to yield to a nonexistant thread\n");
 			return ULT_INVALID; //when the requested thread was not on the ready list
 		}		
 		return ULT_Switch(target);
@@ -126,27 +125,26 @@ Tid ULT_Yield(Tid yieldTo)
 volatile int doneThat;
 Tid ULT_Switch(Thread *target)
 {
-	printf("Trying to switch to thread with Tid[%d]\n", target->id);
+	//printf("Trying to switch to thread with Tid[%d]\n", target->id);
 
 	ULT_Maintainence();
 
-       doneThat = 0;
-       //save state of current thread to TCB
-       //getcontext(&(runningThread->TCB.register)); //returns twice
-       //ThreadStoreContext(runningThread);
-       getcontext(runningThread->context);	
-       if(!doneThat)
-       {
-	       doneThat = 1;
-	       //choose new thread to run
-	       //int nextID = schedulingPolicy();
-	       //runningThread = &(thread[nextid]);
-	       runningThread = target;
-	       
-	       //copy new thread's TCB to processor
-	       //setcontext(&(thread[nextid]->TCB.register)); //never returns
-	       ThreadRun(runningThread);
-	       assert(0);
+	doneThat = 0;
+	//save state of current thread to TCB
+	//getcontext(&(runningThread->TCB.register)); //returns twice
+	//ThreadStoreContext(runningThread);
+	runningThread->context = getContext();	
+	if(!doneThat)
+	{
+		doneThat = 1;
+		//choose new thread to run
+		//assert(runningThread != target); // this is odd - Craig
+		runningThread = target;
+		
+		//copy new thread's TCB to processor
+		ThreadRun(runningThread); //never returns
+		//test("Should never reach this location", 0);
+		//assert(0);
 	}
 	return target->id;
 }
@@ -177,7 +175,7 @@ Tid ULT_DestroyThread(Tid tid)
 		ThreadListAddToHead(zombie, target);
 		numberOfThreads--;
 
-		printf("Thead[%d] zombified\n", target->id);
+		//printf("Thead[%d] zombified\n", target->id);
 
 		return target->id;
 	}
@@ -190,7 +188,7 @@ Tid ULT_DestroyThread(Tid tid)
 		ThreadListAddToHead(zombie, runningThread);
 		numberOfThreads--;
 
-		printf("Thead[%d] zombified\n", runningThread->id);
+		//printf("Thead[%d] zombified\n", runningThread->id);
 	
 		ULT_Yield(ULT_ANY);		
 	}
@@ -206,7 +204,7 @@ Tid ULT_DestroyThread(Tid tid)
 		ThreadListAddToHead(zombie, target);
 		numberOfThreads--;
 
-		printf("Thead[%d] zombified\n", target->id);
+		//printf("Thead[%d] zombified\n", target->id);
 
 		return target->id;
 	}

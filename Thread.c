@@ -126,7 +126,7 @@ void ThreadRun(Thread* thread)
 {
 //printf("setting context\n"); fflush(stdout);
 	//printUContext(thread->context);
-	verifyContext(thread->context);
+	//verifyContext(thread->context);
 	setcontext(thread->context);
 //printf("set context\n"); fflush(stdout);
 
