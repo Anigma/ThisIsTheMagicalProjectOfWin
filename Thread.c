@@ -3,8 +3,9 @@
 void ThreadFree(Thread* myThread)
 {
 //printf("FREE\n");
-	free(myThread->context);
-	free(myThread);
+  printf("Freeing thread[%d], context[0x%.8x]\n", myThread->id, (int) myThread->context);
+  free(myThread->context);
+  free(myThread);
 //printf("FREED\n");
 }
 
@@ -81,7 +82,8 @@ void verifyContext(ucontext_t* context)
 // The first thread's context will be slightly different, we'll see how it goes.
 ucontext_t* contextInit(void(*fn) (void*), void* parg)
 {
-	ucontext_t* context = getContext(); //(ucontext_t*) mallocSafely(sizeof(ucontext_t));	
+	ucontext_t* context = getContext(); //(ucontext_t*) mallocSafely(sizeof(ucontext_t));
+	verifyContext(context);
 
 	context->uc_link = NULL;
 	
@@ -125,7 +127,7 @@ void ThreadStoreContext(Thread* thread)
 void ThreadRun(Thread* thread)
 {
 //printf("setting context\n"); fflush(stdout);
-	//printUContext(thread->context);
+  //printUContext(thread->context);
 	verifyContext(thread->context);
 	setcontext(thread->context);
 //printf("set context\n"); fflush(stdout);
