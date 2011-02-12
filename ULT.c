@@ -51,7 +51,7 @@ void ULT_Maintainence()
 //The caller of the function continues to execute after the function returns.
 Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 {
-  ULT_Maintainence();
+ ULT_Maintainence();
 
   if(numberOfThreads >= ULT_MAX_THREADS)
     {
@@ -131,19 +131,15 @@ Tid ULT_Switch(Thread *target)
 
   doneThat = 0;
   //save state of current thread to TCB
-  //getcontext(&(runningThread->TCB.register)); //returns twice
-  //ThreadStoreContext(runningThread);
-  getcontext(runningThread->context);	
+  ucontext_t* temp = (ucontext_t*) malloc(sizeof(ucontext_t));
+  assert(temp);
+  int err = getcontext(temp);
+  assert(!err);
+  runningThread->context = temp;	
   if(!doneThat)
     {
       doneThat = 1;
-      //choose new thread to run
-      //int nextID = schedulingPolicy();
-      //runningThread = &(thread[nextid]);
       runningThread = target;
-	       
-      //copy new thread's TCB to processor
-      //setcontext(&(thread[nextid]->TCB.register)); //never returns
       ThreadRun(runningThread);
       assert(0);
     }

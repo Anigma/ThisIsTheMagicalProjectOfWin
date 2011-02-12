@@ -153,12 +153,8 @@ ThreadListVerify(list);
 //Print the tids in the list
 void ThreadListPrint(const ThreadList* list) 
 {
-//ThreadListVerify(list);
-
 	assert(list);
-
 	ThreadListNode* node = list->head;
-
 	while (node)
 	{
 		printf("%d ", node->thread->id); fflush(stdout);
@@ -182,9 +178,3 @@ void ThreadListVerify(const ThreadList* list)
 		assert(node->previous);
 	}
 }
-
-
-
-
-
-
