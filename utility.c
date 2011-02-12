@@ -24,8 +24,8 @@ void* mallocSafely(size_t size)
 {
 	if(size==0) error("I refuse to allocate nothing");
 	//let's use calloc for now, for testing purposes, if we need the speed, undo later
-	//void* temp = malloc(size); 
-	void* temp = calloc(size, 1);
+	void* temp = malloc(size); 
+	//void* temp = calloc(size, 1);
 	if(temp==NULL) error("Could not allocate memory!");
 	return temp;
 }

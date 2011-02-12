@@ -118,6 +118,7 @@ ThreadListVerify(list);
 				node->previous->next = NULL;
 			}
 
+ThreadListVerify(list);
 			return node->thread;
 		}
 	}

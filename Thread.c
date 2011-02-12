@@ -83,9 +83,9 @@ void verifyContext(ucontext_t* context)
 ucontext_t* contextInit(void(*fn) (void*), void* parg)
 {
 	ucontext_t* context = getContext(); //(ucontext_t*) mallocSafely(sizeof(ucontext_t));
+	context->uc_link = NULL;
 	verifyContext(context);
 
-	context->uc_link = NULL;
 	
 	//context->sigset_t = ??;
 
