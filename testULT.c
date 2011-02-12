@@ -33,7 +33,6 @@ void testULT()
 	ret = ULT_Yield(0);
 	test("Initial thread returns from Yield(0)", tidValid(ret));
 	ret = ULT_Yield(ULT_ANY);
-	//printf("ret: %d\n", ret);
 	test("Initial thread returns from Yield(ANY)",ret == ULT_NONE);
 	ret = ULT_Yield(0xDEADBEEF);
 	test("Initial thread returns from Yield(INVALID)", ret == ULT_INVALID);
@@ -41,11 +40,8 @@ void testULT()
 	test("Initial thread returns from Yield(INVALID2)", ret == ULT_INVALID);
 	// Create a thread
 	ret = ULT_CreateThread((void (*)(void *))hello, "World");
-	printf("ret: %d\n", ret);
 	test("Creates a basic hello world thread", tidValid(ret));
-//printf("Now yielding\n"); fflush(stdout);
 	ret2 = ULT_Yield(ret);
-	printf("ret: %d\n", ret2);
 	test("Yielding to this thread returns the correct Tid", ret2 == ret);
 	// Create 10 threads
 	static const int NTHREAD = 10;
@@ -95,6 +91,9 @@ void testULT()
 	// Now lets them all run.
 	for(i = 0; i < ULT_MAX_THREADS; i++)
 	{
+		if(i==13) ThreadListPrint(alive);
+		ThreadListVerify(alive);
+		ThreadListVerify(zombie);
 		ret = ULT_Yield(i);
 		if(i == 0)
 		{ 
@@ -102,6 +101,8 @@ void testULT()
 			// Later ones may or may not depending on who stub schedules on exit.
 			test("Guaranteed that first yield will find someone" ,tidValid(ret));
 		}
+printf("<<>>"); fflush(stdout);
+
 	}
 	// They should have cleaned themselves up when they finished running.
 	// Create maxthreads-1 threads.

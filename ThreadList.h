@@ -30,7 +30,7 @@ void ThreadListFree(ThreadList* list);
 void ThreadListAddToHead(ThreadList* list, Thread* thread);
 
 //Return thread by Tid
-Thread* ThreadListFind(ThreadList* list, Tid id);
+Thread* ThreadListFind(const ThreadList* list, Tid id);
 
 //Remove and return thread by Tid
 Thread* ThreadListRemove(ThreadList* list, Tid id);
@@ -39,6 +39,9 @@ Thread* ThreadListRemove(ThreadList* list, Tid id);
 Thread* ThreadListRemoveEnd(ThreadList* list);
 
 //Print the tids on the list in order
-void ThreadListPrint(ThreadList* list);
+void ThreadListPrint(const ThreadList* list);
+
+//Make sure some basic invariants hold true of a thread list
+void ThreadListVerify(const ThreadList* list);
 
 #endif
