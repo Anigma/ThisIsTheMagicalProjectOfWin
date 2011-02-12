@@ -55,6 +55,8 @@ ThreadListVerify(list);
 	
 	//Put the new node at the head of the list
 	list->head = new;
+ThreadListVerify(list);
+
 }
 
 //Return thread by Tid
@@ -105,6 +107,7 @@ ThreadListVerify(list);
 			else //No previous node so this was the head
 			{
 				list->head = node->next;
+				list->head->previous = NULL;
 			}
 
 			if(node->next) //Take care of the following node

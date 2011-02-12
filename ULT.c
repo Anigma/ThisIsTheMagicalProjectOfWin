@@ -76,50 +76,46 @@ Tid ULT_CreateThread(void(*fn) (void*), void* parg)
 //Caller is put on the ready queue.
 Tid ULT_Yield(Tid yieldTo)
 {
-  ULT_Maintainence();
+	ULT_Maintainence();
+	ThreadListVerify(alive);
+	assert(alive->head);
+	Tid ret;
 
-  //printf("alive list in yield:");
-  //ThreadListPrint(alive);
+	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
+	{
+		//Yield to self. This turns the function call into an no-op
+		assert(runningThread);
+		ret = ULT_Switch(runningThread);
+	}
 
-  assert(alive->head);
-
-
-  if(yieldTo == ULT_SELF) //Continue the execution of the  caller
-    {
-      //Yield to self. This turns the function call into an no-op
-      assert(runningThread);
-      return ULT_Switch(runningThread);
-    }
-
-  if(yieldTo == ULT_ANY) //Invoke any thread on the ready queue except self
-    {
-      //Take next thread at the end of ready queue and execute it
-      Thread* target = ThreadListRemoveEnd(alive);
-      if (!target)
-	return ULT_NONE;
-      if (target->id == runningThread->id) {
-	ThreadListAddToHead(alive, target);
-	return ULT_NONE;
-      }
-		
-      ThreadListAddToHead(alive, target);
-		
-      return ULT_Switch(target);
-    }
-  if(yieldTo >= 0)
-    {
-      //Search ready queue for thread with tid of wantTid and execute it
-      Thread* target = ThreadListFind(alive, yieldTo);
-      if (!target) {
-	return ULT_INVALID; //when the requested thread was not on the ready list
-      }		
-      return ULT_Switch(target);
-    }
-  else
-    {
-      //Alert the caller that the identifier tid does not correspond to a valid thread
-      return ULT_INVALID;
-    }
+	else if(yieldTo == ULT_ANY) //Invoke any thread on the ready queue except self
+	{
+		//Take next thread at the end of ready queue and execute it
+		Thread* target = ThreadListRemoveEnd(alive);
+		if (!target) ret = ULT_NONE;
+		if (target->id == runningThread->id) //next thread to run is self, so don't do anything. Bug?
+		{
+			ThreadListAddToHead(alive, target);
+			ret = ULT_NONE;
+		}
+		else
+		{
+			ThreadListAddToHead(alive, target);
+			ret = ULT_Switch(target);
+		}
+	}
+	else if(yieldTo >= 0) //specific id
+	{
+		Thread* target = ThreadListFind(alive, yieldTo);
+		if (!target)	ret = ULT_INVALID; //not found	
+		else		ret = ULT_Switch(target);
+	}
+	else
+	{
+		ret = ULT_INVALID;
+	}
+	ThreadListVerify(alive);
+	return ret;
 }
 
 volatile int doneThat;

@@ -94,6 +94,8 @@ void testULT()
 		ThreadListVerify(alive);
 		ThreadListVerify(zombie);
 		ret = ULT_Yield(i);
+		ThreadListVerify(alive);
+		ThreadListVerify(zombie);
 		if(i == 0)
 		{ 
 			// Guaranteed that first yield will find someone.
