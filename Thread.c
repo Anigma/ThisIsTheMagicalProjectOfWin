@@ -4,7 +4,7 @@ void ThreadFree(Thread* myThread)
 {
   printf("Freeing thread[%d], context[0x%.8x]\n", myThread->id, (int) myThread->context);
   //free(myThread->context);
-  free(myThread);
+  //free(myThread);
 }
 
 Thread* ThreadInit(ucontext_t* context)

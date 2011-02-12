@@ -78,7 +78,7 @@ Tid ULT_Yield(Tid yieldTo)
 {
 	ULT_Maintainence();
 	ThreadListVerify(alive);
-	assert(alive->head);
+	//assert(alive->head);
 	Tid ret;
 
 	if(yieldTo == ULT_SELF) //Continue the execution of the  caller
@@ -136,6 +136,7 @@ Tid ULT_Switch(Thread *target)
   runningThread->context = temp;*/
   //ThreadListVerify(alive);
 
+  assert(runningThread->context);
   getcontext(runningThread->context);
   if(!doneThat)
     {
