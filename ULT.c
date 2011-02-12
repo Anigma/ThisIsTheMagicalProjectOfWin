@@ -21,7 +21,6 @@ void ULT_Maintainence()
       Thread* thread;
       while((thread = ThreadListRemoveEnd(zombie)))
 	{
-	  printf("BANG!\n");
 	  ThreadFree(thread);
 	}
 
@@ -87,7 +86,6 @@ Tid ULT_Yield(Tid yieldTo)
 
   if(yieldTo == ULT_SELF) //Continue the execution of the  caller
     {
-      printf("YIELD_SELF");
       //Yield to self. This turns the function call into an no-op
       assert(runningThread);
       return ULT_Switch(runningThread);
@@ -95,7 +93,6 @@ Tid ULT_Yield(Tid yieldTo)
 
   if(yieldTo == ULT_ANY) //Invoke any thread on the ready queue except self
     {
-      printf("YIELD_ANY\n");
       //Take next thread at the end of ready queue and execute it
       Thread* target = ThreadListRemoveEnd(alive);
       if (!target)
@@ -114,7 +111,6 @@ Tid ULT_Yield(Tid yieldTo)
       //Search ready queue for thread with tid of wantTid and execute it
       Thread* target = ThreadListFind(alive, yieldTo);
       if (!target) {
-	printf("Trying to yield to a nonexistant thread\n");
 	return ULT_INVALID; //when the requested thread was not on the ready list
       }		
       return ULT_Switch(target);

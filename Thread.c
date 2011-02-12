@@ -2,11 +2,9 @@
 
 void ThreadFree(Thread* myThread)
 {
-//printf("FREE\n");
   printf("Freeing thread[%d], context[0x%.8x]\n", myThread->id, (int) myThread->context);
   free(myThread->context);
   free(myThread);
-//printf("FREED\n");
 }
 
 Thread* ThreadInit(ucontext_t* context)
@@ -78,58 +76,30 @@ void verifyContext(ucontext_t* context)
 	verifyMcontext(&context->uc_mcontext);
 }
 
-
 // The first thread's context will be slightly different, we'll see how it goes.
 ucontext_t* contextInit(void(*fn) (void*), void* parg)
 {
-	ucontext_t* context = getContext(); //(ucontext_t*) mallocSafely(sizeof(ucontext_t));
+	ucontext_t* context = getContext();
 	context->uc_link = NULL;
 	verifyContext(context);
-
-	
-	//context->sigset_t = ??;
-
-	//Setup the stack, including the SP and args
 	(context->uc_stack).ss_sp = calloc(sizeof(int)*(MIN_STACK), 1);
 	(context->uc_stack).ss_size = MIN_STACK;
-	
 	int* ESP = (int*) (context->uc_stack).ss_sp;
 	ESP += MIN_STACK - 100;
-	
-	//Set ESP
 	(context->uc_mcontext).gregs[REG_ESP] = (int) ESP;
-	//Set EIP to *fn 
-	//(context->uc_mcontext).gregs[REG_EIP] = (int) fn;
 	(context->uc_mcontext).gregs[REG_EIP] = (int) &stub;
-	
-	//Write *arg 	 to ESP + 8
 	*(ESP + 2) = (int) parg;
-	//Write *fn  	 to ESP + 4
 	*(ESP + 1) = (int) fn;
-	//Write 0 (Ret*) to ESP + 0
 	*(ESP + 0) = 0;
-	
-	//context->mcontext_t = ??;
 	return context;
 }
 
 void ThreadStoreContext(Thread* thread)
 {
-	//assert that the currently running thread is the thread to which we are storing
-	//assert(runningThread->id == thread->id);
-	//memory leak
 	thread->context = getContext();		
-	
-	printf("Stored context: \n");
-	printUContext(thread->context);
 }
 
 void ThreadRun(Thread* thread)
 {
-//printf("setting context\n"); fflush(stdout);
-  //printUContext(thread->context);
-	verifyContext(thread->context);
 	setcontext(thread->context);
-//printf("set context\n"); fflush(stdout);
-
 }

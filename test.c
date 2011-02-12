@@ -13,7 +13,7 @@ void testThread()
 	Tid id = mythread->id;
 	test("created thread uses the correct id", id == 0);
 	verifyContext(mythread->context);
-	test("thread's context verifies", 1); //commented asserts in verifyStack fail
+	test("thread's context verifies", 1);
 	ThreadFree(mythread);
 }
 
@@ -42,7 +42,6 @@ void testThreadList()
 	thread = ThreadListRemove(list, 999);
 	test("return null when trying to remove from empty thread", thread == NULL);
 
-
 	first = nextTid;
 
 	int i;
@@ -67,11 +66,9 @@ void testThreadList()
 
 int main(int argc, char** argv)
 {
-	//was there a registerHandler() here that accidentally got deleted? -Craig
 	testThread();
 	testThreadList();
 	testULT();
-
 	grandFinale();
 	return 0;
 }
@@ -80,9 +77,7 @@ int main(int argc, char** argv)
 int main2(int argc, char** argv)
 {
 	registerHandler();
-	// Make sure basic thread stuff still works
 	testULT();
-	// Test preemptive threads
 	testULTpreemptive();
 	return 0;
 }

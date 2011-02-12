@@ -83,7 +83,7 @@ void testULT()
 		ret = ULT_CreateThread((void (*)(void *))fact, (void *)10);
 		childrenOkay &= (tidValid(ret));
 	}
-	printf("numberOfThreads = %d\n", numberOfThreads);
+	assert(numberOfThreads == ULT_MAX_THREADS);
 	test("Creating all available threads", childrenOkay);
 	// Now we're out of threads. Next create should fail.
 	ret = ULT_CreateThread((void (*)(void *))fact, (void *)10);
@@ -91,7 +91,6 @@ void testULT()
 	// Now lets them all run.
 	for(i = 0; i < ULT_MAX_THREADS; i++)
 	{
-		if(i==13) ThreadListPrint(alive);
 		ThreadListVerify(alive);
 		ThreadListVerify(zombie);
 		ret = ULT_Yield(i);
@@ -101,8 +100,6 @@ void testULT()
 			// Later ones may or may not depending on who stub schedules on exit.
 			test("Guaranteed that first yield will find someone" ,tidValid(ret));
 		}
-printf("<<>>"); fflush(stdout);
-
 	}
 	// They should have cleaned themselves up when they finished running.
 	// Create maxthreads-1 threads.
