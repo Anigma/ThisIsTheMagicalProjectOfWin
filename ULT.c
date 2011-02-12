@@ -121,21 +121,27 @@ Tid ULT_Yield(Tid yieldTo)
 volatile int doneThat;
 Tid ULT_Switch(Thread *target)
 {
+
   printf("Trying to switch to thread with Tid[%d, context:[0x%.8x]\n", target->id, (int) target->context);
 
   ULT_Maintainence();
 
   doneThat = 0;
   //save state of current thread to TCB
-  ucontext_t* temp = (ucontext_t*) malloc(sizeof(ucontext_t));
+  /*ucontext_t* temp = (ucontext_t*) malloc(sizeof(ucontext_t));
   assert(temp);
   int err = getcontext(temp);
   assert(!err);
-  runningThread->context = temp;	
+      ThreadListVerify(alive);
+  runningThread->context = temp;*/
+  //ThreadListVerify(alive);
+
+  getcontext(runningThread->context);
   if(!doneThat)
     {
       doneThat = 1;
       runningThread = target;
+      printf("Switched to thread with Tid[%d]\n", target->id);
       ThreadRun(runningThread);
       assert(0);
     }

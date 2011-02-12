@@ -100,26 +100,24 @@ ThreadListVerify(list);
 				list->head = NULL;
 				return node->thread;
 			}
-			if(node->previous) //Take care of the previous node
-			{
-				node->previous->next = node->next;
+
+			if (node->previous) {
+			  if (node->next) {
+			    node->previous->next = node->next;
+			    node->next->previous = node->previous;
+			    return node->thread;
+			  }
+			  else {
+			    node->previous->next = NULL;
+			    return node->thread;
+			  }
 			}
-			else //No previous node so this was the head
-			{
-				list->head = node->next;
-				list->head->previous = NULL;
+			else {
+			  list->head = node->next;
+			  list->head->previous = NULL;
+			  return node->thread;
 			}
 
-			if(node->next) //Take care of the following node
-			{
-				assert(node->previous);
-				node->next->previous = node->previous;
-			}
-			else // No following node, so this was the tail
-			{
-
-				node->previous->next = NULL;
-			}
 
 ThreadListVerify(list);
 			return node->thread;
