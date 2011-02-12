@@ -92,8 +92,8 @@ Tid ULT_Yield(Tid yieldTo)
 	{
 		//Take next thread at the end of ready queue and execute it
 		Thread* target = ThreadListRemoveEnd(alive);
-		if (!target) ret = ULT_NONE;
-		if (target->id == runningThread->id) //next thread to run is self, so don't do anything. Bug?
+		if (target == NULL) ret = ULT_NONE;
+		else if (target->id == runningThread->id) //next thread to run is self, so don't do anything. Bug?
 		{
 			ThreadListAddToHead(alive, target);
 			ret = ULT_NONE;
