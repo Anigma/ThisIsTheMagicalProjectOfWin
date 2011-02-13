@@ -3,19 +3,19 @@ Wentao He - whe
 Craig Pemberton - cmp483
 
 Number of slip days used (this project)/(total)
-
+2/2
 
 Describe your high level design here.
-
+Thread is a thread "class" describing threads and thread identifiers.
+ThreadList is a container "class" containing threads.
+utility contains some commonly used idioms.
 
 Describe your testing strategy here
 (and explain how to run your tests and interpret your results)
-
-
+test is our testsuite, which was taken from the provided basic tests and worked into a testing framework.
+We also added our own tests to augment those provided.
+It is used to check our progress toward project correctness by printing a visually clear output. 
+The original tests are also in the project.
 
 Document your testing results here
-
-
-
-
-
+All tests pass except for a few concernining the destruction of invalid threads.

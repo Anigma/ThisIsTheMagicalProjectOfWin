@@ -1,9 +1,10 @@
+//This file contains all the logic for dealing with threads and thread idenifiers.
+
 #ifndef thread_h_
 #define thread_h_
 
 #include <stdlib.h>
 #include "utility.h"
-
 
 extern void stub(void (*root)(void *), void *arg);
 
@@ -50,4 +51,5 @@ void ThreadStoreContext(Thread* thread);
 void ThreadRun(Thread* thread);
 
 void verifyContext(ucontext_t* context);
+
 #endif
